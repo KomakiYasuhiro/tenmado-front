@@ -1,77 +1,88 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="10">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+  <v-form ref="form" v-model="valid">
+    <v-row justify="center" align="center">
+      <v-col cols="12" sm="8" md="10">
+        <v-card class="logo py-4 d-flex justify-center">
+          <div sm="3" md="6">
+            <v-select
+              v-model="location"
+              :items="locationItem"
+              :rules="[v => !!v || '必須項目です']"
+              label="対象地域"
+              item-text="label"
+              item-value="value"
+              prepend-icon="mdi-map-marker-radius"
+              required
+            ></v-select>
           </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+          <div>
+            <v-menu ref="implementationMenu" v-model="implementationMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+            <template v-slot:activator="{ on, attrs }">
+            <v-text-field v-model="implementationDate" label="予報実施日" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+            </template>
+            <v-date-picker
+            v-model="implementationDate"
+            :show-current="false"
+            :active-picker.sync="activePicker"
+            :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
+            min="2021-11-05"
+            @change="implementationSave"
+            ></v-date-picker>
+            </v-menu>
+          </div>
+          <div>
+            <v-menu ref="targetMenu" v-model="targetMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field v-model="targetPeriod" label="予報対象期間" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+              </template>
+              <v-date-picker
+              v-model="targetPeriod"
+              range
+              :show-current="false"
+              :active-picker.sync="activePicker"
+              :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
+              min="2021-11-05"
+              @change="targetPeriodSave"
+              ></v-date-picker>
+            </v-menu>
+          </div>
+          <v-btn class="mr-4" @click="submit">submit</v-btn>
+        </v-card>      
+      </v-col>
+    </v-row>
+  </v-form>
 </template>
+
+<script>
+  export default {
+    data: () => ({
+      activePicker: null,
+      implementationDate: null,
+      targetPeriod: null,
+      implementationMenu: false,
+      targetMenu: false,
+      location: null,
+      locationItem: [
+        { label: 'はこだて'   , value: 'hakodate'  },
+        { label: 'かいじのいえ' , value: 'kaiji'    },
+        { label: 'こまきのいえ' , value: 'komaki'   },
+      ],
+    }),
+    watch: {
+      menu (val) {
+        val && setTimeout(() => (this.activePicker = 'YEAR'))
+      },
+    },
+    methods: {
+      submit () {
+        alert('地域：'+this.location+' \n実施日：'+this.implementationDate+' \n対象期間：'+this.targetPeriod)
+      },
+      implementationSave (implementationDate) {
+        this.$refs.implementationMenu.save(implementationDate)
+      },
+      targetPeriodSave (targetPeriod) {
+        this.$refs.targetMenu.save(targetPeriod)
+      },
+    },
+  }
+</script>
