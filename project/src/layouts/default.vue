@@ -48,7 +48,7 @@
       :absolute="fixed"
       app
     >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <span>&copy; {{ new Date().getFullYear() }} sugimoto kaiji,komaki yasuhiro</span>
     </v-footer>
   </v-app>
 </template>
