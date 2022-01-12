@@ -49,7 +49,16 @@ const config: NuxtConfig = {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    proxy: true,
+  },
+
+  proxy: {
+     '/api/': {
+      target: 'https://tenmado-api-6jbikhj2nq-an.a.run.app',
+      pathRewrite: {'^/api/': '/'}
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

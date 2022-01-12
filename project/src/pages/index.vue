@@ -67,7 +67,8 @@
             <v-col cols="12" sm="8" md="10">  
                 <v-col sm="12" md="12">
                     <v-subheader>
-                      地域：{{weather.inputData.location}}　予報実施日：{{weather.inputData.implementationDate}}
+                      気象台：{{WeatherforecastInfo.meteorologicalObservatoryName}}　
+                      地方：{{WeatherforecastInfo.largeAreaName}}
                     </v-subheader>
                 </v-col>
               <v-simple-table fixed-header height="300px">
@@ -94,6 +95,8 @@
                   </tbody>
                 </template>
               </v-simple-table>
+              
+                  {{ info }}
             </v-col>
           </v-row>
         </v-card>
@@ -104,7 +107,16 @@
 
 <script>
   export default {
-    data: () => ({
+  data: () => ({
+      //
+      WeatherforecastInfo: {
+        meteorologicalObservatoryName: '',
+        largeAreaName: null,
+        cityName: null,
+        reportDateFrom: null,
+        reportDateTo: null
+      },
+      
       valid: null,
       activePicker: null,
       implementationDate: null,
@@ -113,7 +125,7 @@
       targetMenu: false,
       location: null,
       locationItem: [
-        { label: 'はこだて'   , value: 'hakodate'  },
+        { label: '青森気象台'   , value: '020030'  },
         { label: 'かいじのいえ' , value: 'kaiji'    },
         { label: 'こまきのいえ' , value: 'komaki'   },
       ],
@@ -145,20 +157,61 @@
             rainyPercent: '10%',
           },
         ]
-      }
+      },
+      info: null
     }),
     watch: {
       menu (val) {
         val && setTimeout(() => (this.activePicker = 'YEAR'))
       },
     },
+
+    async mounted() {
+        //地域プルダウンに必要な情報の取得paramsいらない
+        const params = {
+          largeAreaCode: '040010',
+          reportDateFrom: '2021-12-18',
+          reportDateTo: '2021-12-22',
+          forecastdays: 3
+        }
+
+        //APIの呼び出し
+        const response = await this.$axios.$get("/api/weatherforecast/",{params})
+        .then( res => {
+          //todo
+          console.log('response data', res)
+        })
+        .catch( err => {
+          //todo
+        })
+    },
+
     methods: {
       submit () {
-        alert('地域：'+this.location+' \n実施日：'+this.implementationDate+' \n対象期間：'+this.targetPeriod)
+        //パラメータの設定
+        const params = {
+          largeAreaCode: this.location,
+          reportDateFrom: '2021-12-18',
+          reportDateTo: '2021-12-22',
+          forecastdays: 3
+        }
+
+        //APIの呼び出し
+        const response = this.$axios.$get("/api/weatherforecast/",{params})
+        .then( res => {
+          this.WeatherforecastInfo.meteorologicalObservatoryName = 'aaa'
+          this.WeatherforecastInfo.largeAreaName = 'sss'
+          console.log('response data', res)
+        })
+        .catch( err => {
+          console.log("response error", err)
+        })
       },
+
       implementationSave (implementationDate) {
         this.$refs.implementationMenu.save(implementationDate)
       },
+
       targetPeriodSave (targetPeriod) {
         this.$refs.targetMenu.save(targetPeriod)
       },
