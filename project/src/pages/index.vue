@@ -1,215 +1,285 @@
 <template>
-  <div>
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="10">
-        <v-card class="logo py-4 d-flex justify-center">
-          <v-form ref="form" v-model="valid">
-          <v-row justify="center" align="center">
+  <v-app>
+    <v-content>
+      <v-container  fluid fill-height>
+        <v-layout wrap>
+          <v-row>
+            <v-col>
+              <v-card class="logo py-4 d-flex">
+                <v-form ref="form" v-model="valid">
+                  <v-row justify="center">
+                    <v-col cols="3">
+                      <v-select
+                        v-model="selectedMeteorologicalObservatory"
+                        :items="meteorologicalObservatoryItems"
+                        :rules="[v => !!v || '必須項目です']"
+                        label="気象台"
+                        item-value="meteorologicalObservatoryCode"
+                        item-text="meteorologicalObservatoryName"
+                        prepend-icon="mdi-map-marker-radius"
+                        return-object
+                        @click="initializeLargeArea"
+                        required
+                      ></v-select>
+                    </v-col>
 
-            <v-col cols="4">
-              <v-select
-                v-model="location"
-                :items="locationItem"
-                :rules="[v => !!v || '必須項目です']"
-                label="対象地域"
-                item-text="label"
-                item-value="value"
-                prepend-icon="mdi-map-marker-radius"
-                required
-              ></v-select>
-            </v-col>
+                    <v-col cols="3">
+                      <v-select
+                        v-model="selectedLargeArea"
+                        :items="selectedMeteorologicalObservatory.largeAreas"
+                        :rules="[v => !!v || '必須項目です']"
+                        label="地域"
+                        item-value="largeAreaCode"
+                        item-text="largeAreaName"
+                        prepend-icon="mdi-map-marker-radius"
+                        required
+                        @change="getStartDate"
+                      ></v-select>
+                    </v-col>
 
-            <v-col cols="2">
-              <v-menu ref="implementationMenu" v-model="implementationMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-              <v-text-field v-model="implementationDate" label="予報実施日" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-              </template>
-              <v-date-picker
-              v-model="implementationDate"
-              :show-current="false"
-              :active-picker.sync="activePicker"
-              :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
-              min="2021-11-05"
-              @change="implementationSave"
-              ></v-date-picker>
-              </v-menu>
-            </v-col>
+                    <v-col cols="2">
+                      <v-select
+                        v-model="selectedForecastdays"
+                        :items="forecastdays"
+                        :rules="[v => !!v || '必須項目です']"
+                        label="予報日数"
+                        item-value="value"
+                        item-text="label"
+                        prepend-icon="mdi-map-marker-radius"
+                        required
+                      ></v-select>
+                    </v-col>
 
-            <v-col cols="4">
-              <v-menu ref="targetMenu" v-model="targetMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field v-model="targetPeriod" label="予報対象期間" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-                </template>
-                <v-date-picker
-                v-model="targetPeriod"
-                range
-                :show-current="false"
-                :active-picker.sync="activePicker"
-                :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
-                min="2021-11-05"
-                @change="targetPeriodSave"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-
-            <v-col cols="2">
-              <v-btn class="mr-4" @click="submit">submit</v-btn>
+                    <v-col cols="3">
+                      <v-menu ref="targetMenu" v-model="targetMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-text-field v-model="targetPeriod" label="予報取得期間" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                        </template>
+                        <v-date-picker
+                        v-model="targetPeriod"
+                        range
+                        :show-current="false"
+                        :active-picker.sync="activePicker"
+                        :allowed-dates="allowedDate"
+                        @change="targetPeriodSave"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-col>
+                  
+                    <v-row justify="center">
+                      <v-col cols="10">
+                        <v-btn 
+                        class="mr-4"
+                        block 
+                        @click="submit" 
+                        :disabled="activateSubmit">submit</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-row>
+                </v-form>
+              </v-card>      
             </v-col>
           </v-row>
-          </v-form>
-        </v-card>      
-      </v-col>
-    </v-row>
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="10">
-        <v-card class="logo py-4 d-flex justify-center">   
-          <v-row justify="center" align="center">
-            <v-col cols="12" sm="8" md="10">  
-                <v-col sm="12" md="12">
-                    <v-subheader>
-                      気象台：{{WeatherforecastInfo.meteorologicalObservatoryName}}　
-                      地方：{{WeatherforecastInfo.largeAreaName}}
-                    </v-subheader>
-                </v-col>
-              <v-simple-table fixed-header height="300px">
-                <template v-slot:default>
-                  <thead>
-                    <tr>
-                      <th class="text-left">
-                        予報対象日
-                      </th>
-                      <th class="text-left">
-                        予報
-                      </th>
-                      <th class="text-left">
-                        降水確率
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in weather.weatherData" :key="item.targetPeriod">
-                      <td>{{ item.targetPeriod }}</td>
-                      <td>{{ item.weather }}</td>
-                      <td>{{ item.rainyPercent }}</td>
-                    </tr>
-                  </tbody>
-                </template>
-              </v-simple-table>
-              
-                  {{ info }}
+          <v-row>
+            <v-col>
+              <v-card class="logo py-4 d-flex">   
+                <v-row justify="center">
+                  <v-col cols="12">
+                    <v-simple-table fixed-header height="300px">
+                      <template v-slot:default>
+                        <thead>
+                          <tr>
+                            <th class="text-left">予測日</th>
+                            <th class="text-left">予報日</th>
+                            <th class="text-left">予報</th>
+                            <th class="text-left">降水確率</th>
+                            <th class="text-left">信頼性</th>
+                            <th class="text-left">最低気温</th>
+                            <th class="text-left">最低気温下限</th>
+                            <th class="text-left">最低気温上限</th>
+                            <th class="text-left">最高気温</th>
+                            <th class="text-left">最高気温下限</th>
+                            <th class="text-left">最低気温上限</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template v-for="(report) in weatherForecasts.reports">
+                            <tr v-for="(forecast) in report.forecasts" :key="forecast.id">
+                              <td>{{ report.reportDate}} </td>
+                              <td>{{ forecast.forecastTargetDate }}</td>
+                              <td>{{ forecast.weather }}</td>
+                              <td>{{ forecast.pop }}</td>
+                              <td>{{ forecast.reliability }}</td>
+                              <td>{{ forecast.lowestTemperature }}</td>
+                              <td>{{ forecast.lowestTemperatureLower }}</td>
+                              <td>{{ forecast.lowestTemperatureUpper }}</td>
+                              <td>{{ forecast.highestTemperature }}</td>
+                              <td>{{ forecast.highestTemperatureLower }}</td>
+                              <td>{{ forecast.highestTemperatureUpper }}</td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </template>
+                    </v-simple-table>
+                  </v-col>
+                </v-row>
+              </v-card>
             </v-col>
           </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </div>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
-<script>
-  export default {
-  data: () => ({
-      //
-      WeatherforecastInfo: {
-        meteorologicalObservatoryName: '',
-        largeAreaName: null,
-        cityName: null,
-        reportDateFrom: null,
-        reportDateTo: null
-      },
-      
-      valid: null,
-      activePicker: null,
-      implementationDate: null,
-      targetPeriod: null,
-      implementationMenu: false,
-      targetMenu: false,
-      location: null,
-      locationItem: [
-        { label: '青森気象台'   , value: '020030'  },
-        { label: 'かいじのいえ' , value: 'kaiji'    },
-        { label: 'こまきのいえ' , value: 'komaki'   },
-      ],
-      weather: {
-        inputData: {
-          location: 'はこだて',
-          implementationDate: '2021/11/05',
-        },
+<script lang="ts">
+  import axios from 'axios';
 
-        weatherData: [
-          {
-            targetPeriod: '2021/11/06',
-            weather: '晴れ',
-            rainyPercent: '0%',
-          },
-          {
-            targetPeriod: '2021/11/07',
-            weather: '曇り',
-            rainyPercent: '40%',
-          },
-          {
-            targetPeriod: '2021/11/08',
-            weather: '晴れ',
-            rainyPercent: '20%',
-          },
-          {
-            targetPeriod: '2021/11/09',
-            weather: '晴れ',
-            rainyPercent: '10%',
-          },
-        ]
-      },
-      info: null
+  export default {
+    data: () => ({
+  
+      valid: null,
+
+      //地域選択変数
+      selectedMeteorologicalObservatory: null,
+      selectedLargeArea: null,
+
+      //予報日数
+      selectedForecastdays: null,
+      forecastdays:[
+        {label:1,value:1},
+        {label:2,value:2},
+        {label:3,value:3},
+        {label:4,value:4},
+        {label:5,value:5},
+        {label:6,value:6},
+        {label:7,value:7},
+      ],
+
+      //予報取得期間
+      minStartDate: "",
+      activePicker: null,
+      targetPeriod: null,
+      targetMenu: false,
+
+      //予報データ
+      weatherForecasts: [],
+
     }),
+
     watch: {
-      menu (val) {
+      menu (val: any) {
         val && setTimeout(() => (this.activePicker = 'YEAR'))
       },
     },
 
-    async mounted() {
-        //地域プルダウンに必要な情報の取得paramsいらない
-        const params = {
-          largeAreaCode: '040010',
-          reportDateFrom: '2021-12-18',
-          reportDateTo: '2021-12-22',
-          forecastdays: 3
-        }
+    asyncData({$axios}) {
+      //地域取得APIの呼び出し
+      return $axios.$get("/api/weatherforecast/meteorologicalobservatory")
+      .then( res => {
+        let meteorologicalObservatoryItems = res.meteorological_observatories
+        let selectedMeteorologicalObservatory = meteorologicalObservatoryItems[0]
+        let selectedLargeArea = selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode
 
-        //APIの呼び出し
-        const response = await this.$axios.$get("/api/weatherforecast/",{params})
-        .then( res => {
-          //todo
-          console.log('response data', res)
-        })
-        .catch( err => {
-          //todo
-        })
+        return {
+          meteorologicalObservatoryItems: meteorologicalObservatoryItems,
+          selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
+          selectedLargeArea: selectedLargeArea
+        }
+      })
+      .catch( err => {
+        //todo
+      })
+    },
+
+    computed: {
+      activateSubmit (){
+        return (this.selectedLargeArea 
+          && this.targetPeriod
+          && this.selectedForecastdays ? false : true)
+      }
+      
     },
 
     methods: {
-      submit () {
+      rowSpanCalc () {
+      console.log("よばれている")
+      const count = this.weatherForecasts.reports.reduce(
+        (total: any, curr: any) => total + curr.forecasts.length,
+        0
+      )
+      console.log("★かうんと",count);
+      return count;
+      },
+
+      initializeLargeArea () {
+        this.selectedLargeArea = null
+      },
+
+      getStartDate () {
         //パラメータの設定
         const params = {
-          largeAreaCode: this.location,
-          reportDateFrom: '2021-12-18',
-          reportDateTo: '2021-12-22',
-          forecastdays: 3
+          largeAreaCode: this.selectedLargeArea
         }
 
         //APIの呼び出し
-        const response = this.$axios.$get("/api/weatherforecast/",{params})
+        const response = this.$axios.$get("/api/weatherforecast/startdate",{params})
         .then( res => {
-          this.WeatherforecastInfo.meteorologicalObservatoryName = 'aaa'
-          this.WeatherforecastInfo.largeAreaName = 'sss'
-          console.log('response data', res)
+          this.minStartDate=res.startDate.toString()
         })
         .catch( err => {
           console.log("response error", err)
         })
       },
 
-      implementationSave (implementationDate) {
-        this.$refs.implementationMenu.save(implementationDate)
+      allowedDate: function (val) {
+      let today = new Date() 
+      today = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      )
+      if(!this.minStartDate){
+        //初期表示時
+        return today >= new Date(val)
+        && new Date(val) >= new Date("2021-12-10")
+      }else{
+        //データ取得開始日付が取れているとき
+        return today >= new Date(val)
+        && new Date(val) >= new Date(this.minStartDate.toString())
+      }
+     },
+
+      submit () {
+
+        //日付のソート
+        let fromDate=this.targetPeriod[0]
+        let toDate=this.targetPeriod[1]
+        if(fromDate>toDate){
+          let tempDate
+          tempDate = fromDate
+          fromDate = toDate
+          toDate = tempDate
+        }
+
+        //パラメータの設定
+        const params = {
+          largeAreaCode: this.selectedLargeArea,
+          reportDateFrom: fromDate,
+          reportDateTo: toDate,
+          forecastdays: this.selectedForecastdays
+        }
+
+        //APIの呼び出し
+        const response = this.$axios.$get("/api/weatherforecast/",{params})
+        .then( res => {
+          console.log('params',params)
+          this.weatherForecasts = res
+          console.log('response data', this.weatherForecasts)
+        })
+        .catch( err => {
+          console.log("response error", err)
+        })
       },
 
       targetPeriodSave (targetPeriod) {
