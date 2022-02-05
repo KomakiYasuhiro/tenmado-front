@@ -2,12 +2,8 @@ FROM node:12.16.1-alpine
 
 WORKDIR /usr/src/project
 
-ENV PORT 8080
-ENV HOST 0.0.0.0
-
-RUN apk update && \
-    apk upgrade && \
-    yarn global add @vue/cli
+ENV PORT=8080
+ENV HOST=0.0.0.0
 
 COPY . /usr/src/project
 
