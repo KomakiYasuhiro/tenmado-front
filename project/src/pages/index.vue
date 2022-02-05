@@ -5,7 +5,7 @@
         <v-layout wrap>
           <v-row>
             <v-col>
-              <v-card class="logo py-4 d-flex">
+              <v-card class="logo py-4">
                 <v-form ref="form" v-model="valid">
                   <v-row justify="center">
                     <v-col cols="3">
@@ -37,19 +37,6 @@
                       ></v-select>
                     </v-col>
 
-                    <v-col cols="2">
-                      <v-select
-                        v-model="selectedForecastdays"
-                        :items="forecastdays"
-                        :rules="[v => !!v || '必須項目です']"
-                        label="予報日数"
-                        item-value="value"
-                        item-text="label"
-                        prepend-icon="mdi-map-marker-radius"
-                        required
-                      ></v-select>
-                    </v-col>
-
                     <v-col cols="3">
                       <v-menu ref="targetMenu" v-model="targetMenu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
@@ -65,16 +52,15 @@
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
-                  
-                    <v-row justify="center">
-                      <v-col cols="10">
-                        <v-btn 
+                  </v-row>
+                  <v-row justify="center">
+                    <v-col cols="10">
+                      <v-btn 
                         class="mr-4"
                         block 
                         @click="submit" 
                         :disabled="activateSubmit">submit</v-btn>
                       </v-col>
-                    </v-row>
                   </v-row>
                 </v-form>
               </v-card>      
@@ -144,18 +130,6 @@
       selectedMeteorologicalObservatory: null,
       selectedLargeArea: null,
 
-      //予報日数
-      selectedForecastdays: null,
-      forecastdays:[
-        {label:1,value:1},
-        {label:2,value:2},
-        {label:3,value:3},
-        {label:4,value:4},
-        {label:5,value:5},
-        {label:6,value:6},
-        {label:7,value:7},
-      ],
-
       //予報取得期間
       minStartDate: "",
       activePicker: null,
@@ -195,8 +169,7 @@
     computed: {
       activateSubmit (){
         return (this.selectedLargeArea 
-          && this.targetPeriod
-          && this.selectedForecastdays ? false : true)
+          && this.targetPeriod ? false : true)
       }
       
     },
@@ -267,7 +240,7 @@
           largeAreaCode: this.selectedLargeArea,
           reportDateFrom: fromDate,
           reportDateTo: toDate,
-          forecastdays: this.selectedForecastdays
+          forecastdays: "7"
         }
 
         //APIの呼び出し
