@@ -8,8 +8,10 @@ RUN apk update && \
 
 COPY . /usr/src/project
 
+EXPOSE 8080
+
 RUN yarn
 
 RUN yarn build
 
-RUN yarn start
+CMD ["yarn" "start"]
