@@ -4,8 +4,9 @@ services:
         build: ./localdocker/vue
         container_name: 'tenmado-front'
         volumes:
-            - ./project:/home/node/app/project
+            - .:/usr/src
         ports:
             - 3000:3000
         environment:
             HOST: 0.0.0.0
+        stdin_open: true

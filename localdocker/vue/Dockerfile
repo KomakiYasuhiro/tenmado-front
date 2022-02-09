@@ -4,4 +4,4 @@ RUN apk update && \
     apk upgrade && \
     yarn global add @vue/cli
 
-WORKDIR /home/node/app/project
+WORKDIR /usr/src

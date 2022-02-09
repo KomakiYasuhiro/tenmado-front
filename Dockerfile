@@ -1,11 +1,11 @@
 FROM node:12.16.1-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
 ENV PORT=8080
 ENV HOST=0.0.0.0
 
-COPY . /usr/src/app
+COPY . /usr/src
 
 EXPOSE 8080
 
