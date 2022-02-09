@@ -24,13 +24,6 @@
                     </v-col>
 
                     <v-col cols="3">
-                      <!-- <v-select
-                        v-if="!selectedMeteorologicalObservatory"
-                        disabled
-                        label="地域"
-                        prepend-icon="mdi-map-marker-radius"
-                        required
-                      ></v-select>-->
                       <v-select
                         v-model="selectedLargeArea"
                         :disabled="!selectedMeteorologicalObservatory"
