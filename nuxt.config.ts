@@ -2,8 +2,8 @@ import colors from 'vuetify/es5/util/colors'
 import { NuxtConfig } from '@nuxt/types'
 
 const config: NuxtConfig = {
-  mode: 'universal',
-  srcDir: 'src/',
+  ssr: true,
+  srcDir: 'app/',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -54,9 +54,9 @@ const config: NuxtConfig = {
   },
 
   proxy: {
-     '/api/': {
+    '/api/': {
       target: 'https://tenmado-api-6jbikhj2nq-an.a.run.app',
-      pathRewrite: {'^/api/': '/'}
+      pathRewrite: { '^/api/': '/' }
     },
   },
 

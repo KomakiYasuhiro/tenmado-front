@@ -26,7 +26,8 @@
                     <v-col cols="3">
                       <v-select
                         v-model="selectedLargeArea"
-                        :items="selectedMeteorologicalObservatory.largeAreas"
+                        :disabled="!selectedMeteorologicalObservatory"
+                        :items="selectedMeteorologicalObservatory ? selectedMeteorologicalObservatory.largeAreas : []"
                         :rules="[(v) => !!v || '必須項目です']"
                         label="地域"
                         item-value="largeAreaCode"
@@ -69,13 +70,7 @@
                   </v-row>
                   <v-row justify="center">
                     <v-col cols="10">
-                      <v-btn
-                        class="mr-4"
-                        block
-                        @click="submit"
-                        :disabled="activateSubmit"
-                        >submit</v-btn
-                      >
+                      <v-btn class="mr-4" block @click="submit" :disabled="activateSubmit">submit</v-btn>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -104,24 +99,23 @@
                             <th class="text-left">最低気温上限</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <template v-for="report in weatherForecasts.reports">
-                            <tr
-                              v-for="forecast in report.forecasts"
-                              :key="forecast.id"
-                            >
-                              <td>{{ report.reportDate }}</td>
-                              <td>{{ forecast.forecastTargetDate }}</td>
-                              <td>{{ forecast.weather }}</td>
-                              <td>{{ forecast.pop }}</td>
-                              <td>{{ forecast.reliability }}</td>
-                              <td>{{ forecast.lowestTemperature }}</td>
-                              <td>{{ forecast.lowestTemperatureLower }}</td>
-                              <td>{{ forecast.lowestTemperatureUpper }}</td>
-                              <td>{{ forecast.highestTemperature }}</td>
-                              <td>{{ forecast.highestTemperatureLower }}</td>
-                              <td>{{ forecast.highestTemperatureUpper }}</td>
-                            </tr>
+                        <tbody v-if="weatherForecasts != null">
+                          <template v-for="(report) in weatherForecasts.reports">
+                            <template v-for="(forecast) in report.forecasts">
+                              <tr>
+                                <td>{{ report.reportDate }}</td>
+                                <td>{{ forecast.forecastTargetDate }}</td>
+                                <td>{{ forecast.weather }}</td>
+                                <td>{{ forecast.pop }}</td>
+                                <td>{{ forecast.reliability }}</td>
+                                <td>{{ forecast.lowestTemperature }}</td>
+                                <td>{{ forecast.lowestTemperatureLower }}</td>
+                                <td>{{ forecast.lowestTemperatureUpper }}</td>
+                                <td>{{ forecast.highestTemperature }}</td>
+                                <td>{{ forecast.highestTemperatureLower }}</td>
+                                <td>{{ forecast.highestTemperatureUpper }}</td>
+                              </tr>
+                            </template>
                           </template>
                         </tbody>
                       </template>
@@ -138,25 +132,45 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
+import Vue from 'vue'
 
-export default {
-  data: () => ({
-    valid: null,
+import { MeteorologicalObservatoryInterface } from '~/interfaces/MeteorologicalObservatoryInterface'
+import { WeatherForecastInterface } from '~/interfaces/WeatherForecastInterface'
 
-    //地域選択変数
-    selectedMeteorologicalObservatory: null,
-    selectedLargeArea: null,
+interface DataType {
+  valid: any
+  meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
+  //地域選択変数
+  selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface | null
+  selectedLargeArea: string | null
+  //予報取得期間
+  minStartDate: string
+  activePicker: any
+  targetPeriod: any
+  targetMenu: boolean
+  //予報データ
+  weatherForecasts: WeatherForecastInterface | null
+}
 
-    //予報取得期間
-    minStartDate: "",
-    activePicker: null,
-    targetPeriod: null,
-    targetMenu: false,
+export default Vue.extend({
+  data(): DataType {
+    return {
+      valid: null,
 
-    //予報データ
-    weatherForecasts: [],
-  }),
+      //地域選択変数
+      selectedMeteorologicalObservatory: null,
+      selectedLargeArea: null,
+
+      //予報取得期間
+      minStartDate: "",
+      activePicker: null,
+      targetPeriod: null,
+      targetMenu: false,
+
+      //予報データ
+      weatherForecasts: null,
+    }
+  },
 
   watch: {
     menu(val: any) {
@@ -164,50 +178,53 @@ export default {
     },
   },
 
-  asyncData({ $axios }) {
+  async asyncData({ $axios }) {
     //地域取得APIの呼び出し
-    return $axios
-      .$get("/api/weatherforecast/meteorologicalobservatory")
-      .then((res) => {
-        let meteorologicalObservatoryItems = res.meteorological_observatories;
-        let selectedMeteorologicalObservatory =
-          meteorologicalObservatoryItems[0];
-        let selectedLargeArea =
-          selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode;
+    try {
+      let res = await $axios.$get("/api/weatherforecast/meteorologicalobservatory")
+      let meteorologicalObservatoryItems = res.meteorological_observatories;
+      let selectedMeteorologicalObservatory =
+        meteorologicalObservatoryItems[0];
+      let selectedLargeArea =
+        selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode;
 
-        return {
-          meteorologicalObservatoryItems: meteorologicalObservatoryItems,
-          selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
-          selectedLargeArea: selectedLargeArea,
-        };
-      })
-      .catch((err) => {
-        //todo
-      });
+      return {
+        meteorologicalObservatoryItems: meteorologicalObservatoryItems,
+        selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
+        selectedLargeArea: selectedLargeArea,
+      };
+    } catch (err) {
+      // TODO
+    }
   },
 
   computed: {
-    activateSubmit() {
+    activateSubmit(): boolean {
       return this.selectedLargeArea && this.targetPeriod ? false : true;
     },
   },
 
   methods: {
-    rowSpanCalc() {
+    rowSpanCalc(): number {
       console.log("よばれている");
-      const count = this.weatherForecasts.reports.reduce(
-        (total: any, curr: any) => total + curr.forecasts.length,
-        0
-      );
-      console.log("★かうんと", count);
-      return count;
+      if (this.weatherForecasts != null) {
+        const count = this.weatherForecasts.reports.reduce(
+          (total: any, curr: any) => total + curr.forecasts.length,
+          0
+        );
+        console.log("★かうんと", count);
+        return count;
+      }
+      else {
+        return 0
+      }
     },
 
-    initializeLargeArea() {
+    initializeLargeArea(): void {
       this.selectedLargeArea = null;
     },
 
-    getStartDate() {
+    getStartDate(): void {
       //パラメータの設定
       const params = {
         largeAreaCode: this.selectedLargeArea,
@@ -224,7 +241,7 @@ export default {
         });
     },
 
-    allowedDate: function (val) {
+    allowedDate(val): boolean {
       let today = new Date();
       today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       if (!this.minStartDate) {
@@ -241,7 +258,7 @@ export default {
       }
     },
 
-    submit() {
+    submit(): void {
       //日付のソート
       let fromDate = this.targetPeriod[0];
       let toDate = this.targetPeriod[1];
@@ -274,8 +291,8 @@ export default {
     },
 
     targetPeriodSave(targetPeriod) {
-      this.$refs.targetMenu.save(targetPeriod);
+      this.targetMenu = targetPeriod;
     },
   },
-};
+})
 </script>
