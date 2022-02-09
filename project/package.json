@@ -12,7 +12,8 @@
     "@nuxtjs/axios": "^5.13.6",
     "core-js": "^3.18.3",
     "nuxt": "^2.15.8",
-    "vuetify": "^2.5.10"
+    "vuetify": "^2.5.10",
+    "vuex-module-decorators": "^2.0.0"
   },
   "devDependencies": {
     "@nuxt/types": "^2.15.8",
