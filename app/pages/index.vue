@@ -126,6 +126,8 @@
             </v-col>
           </v-row>
         </v-layout>
+        <!-- Storeの参照例 -->
+        <h1>Stars: {{ JSON.stringify($store.getters['meteorologicalObservatoryStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</h1>
       </v-container>
     </v-main>
   </v-app>
@@ -176,6 +178,10 @@ export default Vue.extend({
     menu(val: any) {
       val && setTimeout(() => (this.activePicker = "YEAR"));
     },
+  },
+
+  async fetch({ store }) {
+    await store.dispatch('meteorologicalObservatoryStore/fetchMeteorologicalObservatories');
   },
 
   async asyncData({ $axios }) {
