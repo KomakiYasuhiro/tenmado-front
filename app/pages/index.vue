@@ -127,7 +127,9 @@
           </v-row>
         </v-layout>
         <!-- Storeの参照例 -->
-        <h1>Stars: {{ JSON.stringify($store.getters['meteorologicalObservatoryStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</h1>
+        <p>気象台一覧の一部: {{ JSON.stringify($store.getters['meteorologicalObservatoryStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</p>
+        <br />
+        <p>天気予報の一部: {{ $store.getters['weatherForecastStore/weatherForecast'] ? JSON.stringify($store.getters['weatherForecastStore/weatherForecast'].meteorologicalObservatoryName) : '' }}</p>
       </v-container>
     </v-main>
   </v-app>
@@ -264,6 +266,11 @@ export default Vue.extend({
       }
     },
 
+    // fetchサンプル(TODO submit関数内で呼び出す)
+    async samplefetch(params) {
+      await this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params);
+    },
+
     submit(): void {
       //日付のソート
       let fromDate = this.targetPeriod[0];
@@ -282,6 +289,8 @@ export default Vue.extend({
         reportDateTo: toDate,
         forecastdays: "7",
       };
+
+      this.samplefetch(params)
 
       //APIの呼び出し
       const response = this.$axios
