@@ -52,6 +52,7 @@
                             label="予報取得期間"
                             prepend-icon="mdi-calendar"
                             readonly
+                            :rules="[(v) => v != null ? (v.length != 2 ? '期間で指定してください' : !!v) : !!v]"
                             v-bind="attrs"
                             v-on="on"
                           ></v-text-field>
@@ -60,7 +61,6 @@
                           v-model="targetPeriod"
                           range
                           :show-current="false"
-                          :active-picker.sync="activePicker"
                           :allowed-dates="allowedDate"
                           @change="targetPeriodSave"
                         ></v-date-picker>
@@ -149,7 +149,6 @@
 import Vue from 'vue'
 
 import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
-import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
 
 interface DataType {
   meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
@@ -157,8 +156,7 @@ interface DataType {
   selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface
   selectedLargeArea: string | null
   //予報取得期間
-  activePicker: any
-  targetPeriod: any
+  targetPeriod: Array<string> | null
   targetMenu: boolean
 }
 
@@ -177,16 +175,9 @@ export default Vue.extend({
       selectedLargeArea: selectedLargeAreaCode,
 
       //予報取得期間
-      activePicker: null,
       targetPeriod: null,
       targetMenu: false,
     }
-  },
-
-  watch: {
-    menu(val: any) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
   },
 
   async fetch({ store }) {
@@ -223,14 +214,19 @@ export default Vue.extend({
     },
 
     submit(): void {
-      //日付のソート
-      let fromDate = this.targetPeriod[0];
-      let toDate = this.targetPeriod[1];
-      if (fromDate > toDate) {
-        let tempDate;
-        tempDate = fromDate;
-        fromDate = toDate;
-        toDate = tempDate;
+      if (this.targetPeriod == null || this.targetPeriod.length != 2) {
+        return
+      }
+
+      // 指定日付のfromとtoを確定
+      let fromDate: string;
+      let toDate: string;
+      if (this.targetPeriod[0] <= this.targetPeriod[1]) {
+        fromDate = this.targetPeriod[0]
+        toDate = this.targetPeriod[1]
+      } else {
+        fromDate = this.targetPeriod[1]
+        toDate = this.targetPeriod[0]
       }
 
       //パラメータの設定
@@ -244,8 +240,8 @@ export default Vue.extend({
       this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
     },
 
-    targetPeriodSave(targetPeriod) {
-      this.targetMenu = targetPeriod;
+    targetPeriodSave(saving: boolean) {
+      this.targetMenu = saving;
     },
   },
 })
