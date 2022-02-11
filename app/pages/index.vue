@@ -129,17 +129,6 @@
             </v-col>
           </v-row>
         </v-layout>
-        <!-- Storeの参照例 -->
-        <p>気象台一覧の一部: {{ JSON.stringify($store.getters['weatherForecastStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</p>
-        <br />
-        <p>天気予報の一部: {{ $store.getters['weatherForecastStore/weatherForecast'] ? JSON.stringify($store.getters['weatherForecastStore/weatherForecast'].meteorologicalObservatoryName) : '' }}</p>
-        <br />
-        <p>startDate: {{ $store.getters['weatherForecastStore/startDate'] }}</p>
-        <br />
-        <p>selectedLargeArea: {{ selectedLargeArea }}</p>
-        <br />
-        <p>selectedMeteorologicalObservatory: {{ selectedMeteorologicalObservatory }}</p>
-        <br />
       </v-container>
     </v-main>
   </v-app>

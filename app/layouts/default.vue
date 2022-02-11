@@ -1,36 +1,33 @@
 <template>
   <v-app>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-    </v-app-bar>
+    <Header></Header>
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
-    
-    <v-footer
-      :absolute="fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }} sugimoto kaiji,komaki yasuhiro</span>
-    </v-footer>
+    <Footer></Footer>
   </v-app>
 </template>
 
-<script>
-export default {
-  data () {
+<script lang="ts">
+import Vue from 'vue'
+import Header from '~/components/layouts/Header.vue'
+import Footer from '~/components/layouts/Footer.vue'
+
+export default Vue.extend({
+
+  components: {
+    Header,
+    Footer
+  },
+
+  data() {
     return {
       clipped: true,
       fixed: false,
       title: 'tenmado'
     }
   }
-}
+})
 </script>

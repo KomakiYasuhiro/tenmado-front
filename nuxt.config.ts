@@ -32,7 +32,15 @@ const config: NuxtConfig = {
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
-  components: true,
+  // componentsフォルダが階層になっている場合、例えば/components/util/SampleComponent.vueとなっている場合は、 
+  // 基本<util-sample-component />のようにフォルダ名を含めます。
+  // フォルダ階層を無視して<sample-component />としたい場合、以下のように設定する
+  components: [
+    {
+      path: '@/components/',
+      pathPrefix: false
+    }
+  ],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
