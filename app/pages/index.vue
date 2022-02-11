@@ -127,7 +127,7 @@
           </v-row>
         </v-layout>
         <!-- Storeの参照例 -->
-        <p>気象台一覧の一部: {{ JSON.stringify($store.getters['meteorologicalObservatoryStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</p>
+        <p>気象台一覧の一部: {{ JSON.stringify($store.getters['weatherForecastStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</p>
         <br />
         <p>天気予報の一部: {{ $store.getters['weatherForecastStore/weatherForecast'] ? JSON.stringify($store.getters['weatherForecastStore/weatherForecast'].meteorologicalObservatoryName) : '' }}</p>
       </v-container>
@@ -138,8 +138,8 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import { MeteorologicalObservatoryInterface } from '~/interfaces/MeteorologicalObservatoryInterface'
-import { WeatherForecastInterface } from '~/interfaces/WeatherForecastInterface'
+import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
+import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
 
 interface DataType {
   valid: any
@@ -183,7 +183,7 @@ export default Vue.extend({
   },
 
   async fetch({ store }) {
-    await store.dispatch('meteorologicalObservatoryStore/fetchMeteorologicalObservatories');
+    await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
   },
 
   async asyncData({ $axios }) {
