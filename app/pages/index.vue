@@ -11,7 +11,7 @@
                     <v-col cols="3">
                       <v-select
                         v-model="selectedMeteorologicalObservatory"
-                        :items="meteorologicalObservatoryItems"
+                        :items="$store.getters['weatherForecastStore/meteorologicalObservatories']"
                         :rules="[(v) => !!v || '必須項目です']"
                         label="気象台"
                         item-value="meteorologicalObservatoryCode"
@@ -26,8 +26,7 @@
                     <v-col cols="3">
                       <v-select
                         v-model="selectedLargeArea"
-                        :disabled="!selectedMeteorologicalObservatory"
-                        :items="selectedMeteorologicalObservatory ? selectedMeteorologicalObservatory.largeAreas : []"
+                        :items="selectedMeteorologicalObservatory.largeAreas"
                         :rules="[(v) => !!v || '必須項目です']"
                         label="地域"
                         item-value="largeAreaCode"
@@ -99,8 +98,12 @@
                             <th class="text-left">最低気温上限</th>
                           </tr>
                         </thead>
-                        <tbody v-if="weatherForecasts != null">
-                          <template v-for="(report) in weatherForecasts.reports">
+                        <tbody
+                          v-if="$store.getters['weatherForecastStore/weatherForecast'] != null"
+                        >
+                          <template
+                            v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports"
+                          >
                             <template v-for="(forecast) in report.forecasts">
                               <tr>
                                 <td>{{ report.reportDate }}</td>
@@ -132,6 +135,11 @@
         <p>天気予報の一部: {{ $store.getters['weatherForecastStore/weatherForecast'] ? JSON.stringify($store.getters['weatherForecastStore/weatherForecast'].meteorologicalObservatoryName) : '' }}</p>
         <br />
         <p>startDate: {{ $store.getters['weatherForecastStore/startDate'] }}</p>
+        <br />
+        <p>selectedLargeArea: {{ selectedLargeArea }}</p>
+        <br />
+        <p>selectedMeteorologicalObservatory: {{ selectedMeteorologicalObservatory }}</p>
+        <br />
       </v-container>
     </v-main>
   </v-app>
@@ -147,34 +155,31 @@ interface DataType {
   valid: any
   meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
   //地域選択変数
-  selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface | null
+  selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface
   selectedLargeArea: string | null
   //予報取得期間
   minStartDate: string
   activePicker: any
   targetPeriod: any
   targetMenu: boolean
-  //予報データ
-  weatherForecasts: WeatherForecastInterface | null
 }
 
 export default Vue.extend({
   data(): DataType {
+    const selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface = this.$store.getters['weatherForecastStore/meteorologicalObservatories'][0]
+    const selectedLargeAreaCode: string = selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode
     return {
       valid: null,
 
       //地域選択変数
-      selectedMeteorologicalObservatory: null,
-      selectedLargeArea: null,
+      selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
+      selectedLargeArea: selectedLargeAreaCode,
 
       //予報取得期間
       minStartDate: "",
       activePicker: null,
       targetPeriod: null,
       targetMenu: false,
-
-      //予報データ
-      weatherForecasts: null,
     }
   },
 
@@ -188,26 +193,6 @@ export default Vue.extend({
     await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
   },
 
-  async asyncData({ $axios }) {
-    //地域取得APIの呼び出し
-    try {
-      let res = await $axios.$get("/api/weatherforecast/meteorologicalobservatory")
-      let meteorologicalObservatoryItems = res.meteorological_observatories;
-      let selectedMeteorologicalObservatory =
-        meteorologicalObservatoryItems[0];
-      let selectedLargeArea =
-        selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode;
-
-      return {
-        meteorologicalObservatoryItems: meteorologicalObservatoryItems,
-        selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
-        selectedLargeArea: selectedLargeArea,
-      };
-    } catch (err) {
-      // TODO
-    }
-  },
-
   computed: {
     activateSubmit(): boolean {
       return this.selectedLargeArea && this.targetPeriod ? false : true;
@@ -217,8 +202,8 @@ export default Vue.extend({
   methods: {
     rowSpanCalc(): number {
       console.log("よばれている");
-      if (this.weatherForecasts != null) {
-        const count = this.weatherForecasts.reports.reduce(
+      if (this.$store.getters['weatherForecastStore/weatherForecast'] != null) {
+        const count = this.$store.getters['weatherForecastStore/weatherForecast'].reports.reduce(
           (total: any, curr: any) => total + curr.forecasts.length,
           0
         );
@@ -241,16 +226,6 @@ export default Vue.extend({
       };
 
       this.$store.dispatch('weatherForecastStore/fetchStartDate', params)
-
-      //APIの呼び出し
-      const response = this.$axios
-        .$get("/api/weatherforecast/startdate", { params })
-        .then((res) => {
-          this.minStartDate = res.startDate.toString();
-        })
-        .catch((err) => {
-          console.log("response error", err);
-        });
     },
 
     allowedDate(val): boolean {
@@ -290,18 +265,6 @@ export default Vue.extend({
       };
 
       this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
-
-      //APIの呼び出し
-      const response = this.$axios
-        .$get("/api/weatherforecast/", { params })
-        .then((res) => {
-          console.log("params", params);
-          this.weatherForecasts = res;
-          console.log("response data", this.weatherForecasts);
-        })
-        .catch((err) => {
-          console.log("response error", err);
-        });
     },
 
     targetPeriodSave(targetPeriod) {
