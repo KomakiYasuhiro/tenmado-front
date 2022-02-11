@@ -200,27 +200,12 @@ export default Vue.extend({
   },
 
   methods: {
-    rowSpanCalc(): number {
-      console.log("よばれている");
-      if (this.$store.getters['weatherForecastStore/weatherForecast'] != null) {
-        const count = this.$store.getters['weatherForecastStore/weatherForecast'].reports.reduce(
-          (total: any, curr: any) => total + curr.forecasts.length,
-          0
-        );
-        console.log("★かうんと", count);
-        return count;
-      }
-      else {
-        return 0
-      }
-    },
 
     initializeLargeArea(): void {
       this.selectedLargeArea = null;
     },
 
     getStartDate(): void {
-      //パラメータの設定
       const params = {
         largeAreaCode: this.selectedLargeArea,
       };
