@@ -6,7 +6,7 @@
           <v-row>
             <v-col>
               <v-card class="logo py-4">
-                <v-form ref="form" v-model="valid">
+                <v-form ref="form">
                   <v-row justify="center">
                     <v-col cols="3">
                       <v-select
@@ -152,7 +152,6 @@ import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast
 import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
 
 interface DataType {
-  valid: any
   meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
   //地域選択変数
   selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface
@@ -172,7 +171,6 @@ export default Vue.extend({
     })
 
     return {
-      valid: null,
 
       //地域選択変数
       selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
