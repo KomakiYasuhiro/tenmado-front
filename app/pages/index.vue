@@ -163,14 +163,6 @@ interface DataType {
   targetMenu: boolean
 }
 
-function getStartDate(this): void {
-  const params = {
-    largeAreaCode: this.selectedLargeArea,
-  };
-
-  this.$store.dispatch('weatherForecastStore/fetchStartDate', params)
-}
-
 export default Vue.extend({
   data(): DataType {
     const selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface = this.$store.getters['weatherForecastStore/meteorologicalObservatories'][0]
