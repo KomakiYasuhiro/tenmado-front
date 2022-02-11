@@ -1,19 +1,23 @@
 <template>
   <v-app>
     <v-main>
-      <v-container fluid fill-height>
+      <v-container fluid>
         <v-layout wrap>
-          <WeatherForecastCondition></WeatherForecastCondition>
-          <template v-if="$store.getters['weatherForecastStore/weatherForecast'] != null">
-            <template
-              v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports"
-            >
-              <WeatherForecastCard :report="report"></WeatherForecastCard>
-            </template>
-          </template>
+          <div class="condition">
+            <WeatherForecastCondition></WeatherForecastCondition>
+          </div>
         </v-layout>
       </v-container>
     </v-main>
+    <template v-if="$store.getters['weatherForecastStore/weatherForecast'] != null">
+      <div class="cards">
+        <template
+          v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports"
+        >
+          <WeatherForecastCard :report="report"></WeatherForecastCard>
+        </template>
+      </div>
+    </template>
   </v-app>
 </template>
 
@@ -36,3 +40,16 @@ export default Vue.extend({
 
 })
 </script>
+
+<style>
+.condition {
+  margin-bottom: 20px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+</style>
