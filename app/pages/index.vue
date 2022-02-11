@@ -158,16 +158,27 @@ interface DataType {
   selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface
   selectedLargeArea: string | null
   //予報取得期間
-  minStartDate: string
   activePicker: any
   targetPeriod: any
   targetMenu: boolean
+}
+
+function getStartDate(this): void {
+  const params = {
+    largeAreaCode: this.selectedLargeArea,
+  };
+
+  this.$store.dispatch('weatherForecastStore/fetchStartDate', params)
 }
 
 export default Vue.extend({
   data(): DataType {
     const selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface = this.$store.getters['weatherForecastStore/meteorologicalObservatories'][0]
     const selectedLargeAreaCode: string = selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode
+    this.$store.dispatch('weatherForecastStore/fetchStartDate', {
+      largeAreaCode: selectedLargeAreaCode,
+    })
+
     return {
       valid: null,
 
@@ -176,7 +187,6 @@ export default Vue.extend({
       selectedLargeArea: selectedLargeAreaCode,
 
       //予報取得期間
-      minStartDate: "",
       activePicker: null,
       targetPeriod: null,
       targetMenu: false,
@@ -216,18 +226,10 @@ export default Vue.extend({
     allowedDate(val): boolean {
       let today = new Date();
       today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      if (!this.minStartDate) {
-        //初期表示時
-        return (
-          today >= new Date(val) && new Date(val) >= new Date("2021-12-10")
-        );
-      } else {
-        //データ取得開始日付が取れているとき
-        return (
-          today >= new Date(val) &&
-          new Date(val) >= new Date(this.minStartDate.toString())
-        );
-      }
+      return (
+        today >= new Date(val) &&
+        new Date(val) >= new Date(this.$store.getters['weatherForecastStore/startDate'])
+      );
     },
 
     submit(): void {
