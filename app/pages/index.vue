@@ -6,19 +6,19 @@
           <v-row>
             <v-col>
               <v-card class="logo py-4">
-                <v-form ref="form" v-model="valid">
+                <v-form ref="form">
                   <v-row justify="center">
                     <v-col cols="3">
                       <v-select
                         v-model="selectedMeteorologicalObservatory"
-                        :items="meteorologicalObservatoryItems"
+                        :items="$store.getters['weatherForecastStore/meteorologicalObservatories']"
                         :rules="[(v) => !!v || '必須項目です']"
                         label="気象台"
                         item-value="meteorologicalObservatoryCode"
                         item-text="meteorologicalObservatoryName"
                         prepend-icon="mdi-map-marker-radius"
                         return-object
-                        @click="initializeLargeArea"
+                        @change="initializeLargeArea"
                         required
                       ></v-select>
                     </v-col>
@@ -26,8 +26,7 @@
                     <v-col cols="3">
                       <v-select
                         v-model="selectedLargeArea"
-                        :disabled="!selectedMeteorologicalObservatory"
-                        :items="selectedMeteorologicalObservatory ? selectedMeteorologicalObservatory.largeAreas : []"
+                        :items="selectedMeteorologicalObservatory.largeAreas"
                         :rules="[(v) => !!v || '必須項目です']"
                         label="地域"
                         item-value="largeAreaCode"
@@ -53,6 +52,7 @@
                             label="予報取得期間"
                             prepend-icon="mdi-calendar"
                             readonly
+                            :rules="[(v) => v != null ? (v.length != 2 ? '期間で指定してください' : !!v) : !!v]"
                             v-bind="attrs"
                             v-on="on"
                           ></v-text-field>
@@ -61,7 +61,6 @@
                           v-model="targetPeriod"
                           range
                           :show-current="false"
-                          :active-picker.sync="activePicker"
                           :allowed-dates="allowedDate"
                           @change="targetPeriodSave"
                         ></v-date-picker>
@@ -99,8 +98,12 @@
                             <th class="text-left">最低気温上限</th>
                           </tr>
                         </thead>
-                        <tbody v-if="weatherForecasts != null">
-                          <template v-for="(report) in weatherForecasts.reports">
+                        <tbody
+                          v-if="$store.getters['weatherForecastStore/weatherForecast'] != null"
+                        >
+                          <template
+                            v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports"
+                          >
                             <template v-for="(forecast) in report.forecasts">
                               <tr>
                                 <td>{{ report.reportDate }}</td>
@@ -126,6 +129,17 @@
             </v-col>
           </v-row>
         </v-layout>
+        <!-- Storeの参照例 -->
+        <p>気象台一覧の一部: {{ JSON.stringify($store.getters['weatherForecastStore/meteorologicalObservatories'][0].meteorologicalObservatoryName) }}</p>
+        <br />
+        <p>天気予報の一部: {{ $store.getters['weatherForecastStore/weatherForecast'] ? JSON.stringify($store.getters['weatherForecastStore/weatherForecast'].meteorologicalObservatoryName) : '' }}</p>
+        <br />
+        <p>startDate: {{ $store.getters['weatherForecastStore/startDate'] }}</p>
+        <br />
+        <p>selectedLargeArea: {{ selectedLargeArea }}</p>
+        <br />
+        <p>selectedMeteorologicalObservatory: {{ selectedMeteorologicalObservatory }}</p>
+        <br />
       </v-container>
     </v-main>
   </v-app>
@@ -134,68 +148,40 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import { MeteorologicalObservatoryInterface } from '~/interfaces/MeteorologicalObservatoryInterface'
-import { WeatherForecastInterface } from '~/interfaces/WeatherForecastInterface'
+import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
 
 interface DataType {
-  valid: any
   meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
   //地域選択変数
-  selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface | null
+  selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface
   selectedLargeArea: string | null
   //予報取得期間
-  minStartDate: string
-  activePicker: any
-  targetPeriod: any
+  targetPeriod: Array<string> | null
   targetMenu: boolean
-  //予報データ
-  weatherForecasts: WeatherForecastInterface | null
 }
 
 export default Vue.extend({
   data(): DataType {
+    const selectedMeteorologicalObservatory: MeteorologicalObservatoryInterface = this.$store.getters['weatherForecastStore/meteorologicalObservatories'][0]
+    const selectedLargeAreaCode: string = selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode
+    this.$store.dispatch('weatherForecastStore/fetchStartDate', {
+      largeAreaCode: selectedLargeAreaCode,
+    })
+
     return {
-      valid: null,
 
       //地域選択変数
-      selectedMeteorologicalObservatory: null,
-      selectedLargeArea: null,
+      selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
+      selectedLargeArea: selectedLargeAreaCode,
 
       //予報取得期間
-      minStartDate: "",
-      activePicker: null,
       targetPeriod: null,
       targetMenu: false,
-
-      //予報データ
-      weatherForecasts: null,
     }
   },
 
-  watch: {
-    menu(val: any) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
-  },
-
-  async asyncData({ $axios }) {
-    //地域取得APIの呼び出し
-    try {
-      let res = await $axios.$get("/api/weatherforecast/meteorologicalobservatory")
-      let meteorologicalObservatoryItems = res.meteorological_observatories;
-      let selectedMeteorologicalObservatory =
-        meteorologicalObservatoryItems[0];
-      let selectedLargeArea =
-        selectedMeteorologicalObservatory.largeAreas[0].largeAreaCode;
-
-      return {
-        meteorologicalObservatoryItems: meteorologicalObservatoryItems,
-        selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
-        selectedLargeArea: selectedLargeArea,
-      };
-    } catch (err) {
-      // TODO
-    }
+  async fetch({ store }) {
+    await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
   },
 
   computed: {
@@ -205,68 +191,42 @@ export default Vue.extend({
   },
 
   methods: {
-    rowSpanCalc(): number {
-      console.log("よばれている");
-      if (this.weatherForecasts != null) {
-        const count = this.weatherForecasts.reports.reduce(
-          (total: any, curr: any) => total + curr.forecasts.length,
-          0
-        );
-        console.log("★かうんと", count);
-        return count;
-      }
-      else {
-        return 0
-      }
-    },
 
     initializeLargeArea(): void {
       this.selectedLargeArea = null;
     },
 
     getStartDate(): void {
-      //パラメータの設定
       const params = {
         largeAreaCode: this.selectedLargeArea,
       };
 
-      //APIの呼び出し
-      const response = this.$axios
-        .$get("/api/weatherforecast/startdate", { params })
-        .then((res) => {
-          this.minStartDate = res.startDate.toString();
-        })
-        .catch((err) => {
-          console.log("response error", err);
-        });
+      this.$store.dispatch('weatherForecastStore/fetchStartDate', params)
     },
 
     allowedDate(val): boolean {
       let today = new Date();
       today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      if (!this.minStartDate) {
-        //初期表示時
-        return (
-          today >= new Date(val) && new Date(val) >= new Date("2021-12-10")
-        );
-      } else {
-        //データ取得開始日付が取れているとき
-        return (
-          today >= new Date(val) &&
-          new Date(val) >= new Date(this.minStartDate.toString())
-        );
-      }
+      return (
+        today >= new Date(val) &&
+        new Date(val) >= new Date(this.$store.getters['weatherForecastStore/startDate'])
+      );
     },
 
     submit(): void {
-      //日付のソート
-      let fromDate = this.targetPeriod[0];
-      let toDate = this.targetPeriod[1];
-      if (fromDate > toDate) {
-        let tempDate;
-        tempDate = fromDate;
-        fromDate = toDate;
-        toDate = tempDate;
+      if (this.targetPeriod == null || this.targetPeriod.length != 2) {
+        return
+      }
+
+      // 指定日付のfromとtoを確定
+      let fromDate: string;
+      let toDate: string;
+      if (this.targetPeriod[0] <= this.targetPeriod[1]) {
+        fromDate = this.targetPeriod[0]
+        toDate = this.targetPeriod[1]
+      } else {
+        fromDate = this.targetPeriod[1]
+        toDate = this.targetPeriod[0]
       }
 
       //パラメータの設定
@@ -277,21 +237,11 @@ export default Vue.extend({
         forecastdays: "7",
       };
 
-      //APIの呼び出し
-      const response = this.$axios
-        .$get("/api/weatherforecast/", { params })
-        .then((res) => {
-          console.log("params", params);
-          this.weatherForecasts = res;
-          console.log("response data", this.weatherForecasts);
-        })
-        .catch((err) => {
-          console.log("response error", err);
-        });
+      this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
     },
 
-    targetPeriodSave(targetPeriod) {
-      this.targetMenu = targetPeriod;
+    targetPeriodSave(saving: boolean) {
+      this.targetMenu = saving;
     },
   },
 })
