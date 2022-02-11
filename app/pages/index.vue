@@ -18,7 +18,7 @@
                         item-text="meteorologicalObservatoryName"
                         prepend-icon="mdi-map-marker-radius"
                         return-object
-                        @click="initializeLargeArea"
+                        @change="initializeLargeArea"
                         required
                       ></v-select>
                     </v-col>
