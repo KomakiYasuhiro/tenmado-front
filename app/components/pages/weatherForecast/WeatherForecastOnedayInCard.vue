@@ -1,21 +1,26 @@
-<template>
-    <div class="forecast">
-        <div class="forecast-target-date">{{ forecast.forecastTargetDate }}</div>
-        <!-- <div>{{ forecast.reliability }}</div> -->
-        <img class="weather-fig" :src="forecast.weatherFigUrl" />
-        <div class="weather">{{ forecast.weather }}</div>
-        <div class="pop">{{ forecast.pop }}</div>
-        <div class="highest-temperature-area">
-            {{ forecast.highestTemperature }}
-            {{ forecast.highestTemperatureUpper }}
-            {{ forecast.highestTemperatureLower }}
-        </div>
-        <div class="lowest-temperature-area">
-            {{ forecast.lowestTemperature }}
-            {{ forecast.lowestTemperatureUpper }}
-            {{ forecast.lowestTemperatureLower }}
-        </div>
-    </div>
+<template lang="pug">
+.forecast
+    .forecast-target-date {{ forecast.forecastTargetDate.toString().substring(5, 10).replace('-', '/') }}
+    //- .reliability {{ forecast.reliability }}
+    img.weather-fig(:src="forecast.weatherFigUrl")
+    .weather {{ forecast.weather }}
+    .pop
+        .pop-num {{ forecast.pop }}
+        .pop-percent &#37;
+    .temperature-area.highest-temperature-area
+        .temperature.highest-temperature {{ forecast.highestTemperature }} &#8451;
+        .temprature-interval.highest-temprature-interval(v-if="forecast.highestTemperatureUpper != null")
+            | &#40;
+            | {{ forecast.highestTemperatureUpper }}&#8451; &#126;
+            | {{ forecast.highestTemperatureLower }}&#8451;
+            | &#41;
+    .temperature-area.lowest-temperature-area
+        .temperature.lowest-temperature {{ forecast.lowestTemperature }} &#8451;
+        .temprature-interval.lowest-temprature-interval(v-if="forecast.lowestTemperatureUpper != null")
+            | &#40;
+            | {{ forecast.lowestTemperatureUpper }}&#8451; &#126;
+            | {{ forecast.lowestTemperatureLower }}&#8451;
+            | &#41;
 </template>
 
 <script lang="ts">
@@ -33,12 +38,63 @@ export default Vue.extend({
 
 </script>
 
-<style>
+<style lang="scss" scoped>
 .forecast {
     display: flex;
     flex-direction: column;
-    margin-left: 5px;
-    margin-right: 5px;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
     width: 14.28%;
+
+    .forecast-target-date {
+        font-size: 14px;
+    }
+
+    .weather-fig {
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+
+    .weather {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .pop {
+        margin-top: 6px;
+        margin-bottom: 6px;
+        display: flex;
+
+        .pop-num {
+            font-size: 14px;
+        }
+        .pop-percent {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+    }
+
+    .temperature-area {
+        display: flex;
+        align-items: center;
+
+        .temperature {
+            font-size: 20px;
+            margin-right: 5px;
+        }
+
+        .temprature-interval {
+            font-size: 10px;
+        }
+    }
+
+    .highest-temperature-area {
+        color: #d3504e;
+    }
+
+    .lowest-temperature-area {
+        color: #4e8fd3;
+    }
 }
 </style>

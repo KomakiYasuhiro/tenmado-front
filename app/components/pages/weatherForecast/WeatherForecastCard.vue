@@ -1,12 +1,11 @@
-<template>
-    <div class="card card-skin">
-        <div class="report-date">{{ report.reportDate }}</div>
-        <div class="forecasts">
-            <template v-for="(forecast) in report.forecasts">
-                <WeatherForecastOnedayInCard :forecast="forecast"></WeatherForecastOnedayInCard>
-            </template>
-        </div>
-    </div>
+<template lang="pug">
+.card.card-skin
+    .report-date
+        .report-date-year {{ report.reportDate.toString().substring(0, 4) }}
+        .report-date-monthdate {{ report.reportDate.toString().substring(5, 10).replace('-', '/') }} 
+    .forecasts
+        template(v-for="(forecast) in report.forecasts")
+            WeatherForecastOnedayInCard(:forecast="forecast")
 </template>
 
 <script lang="ts">
@@ -30,29 +29,41 @@ export default Vue.extend({
 
 </script>
 
-<style>
+<style lang="scss" scoped>
 .card {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     margin-top: 8px;
     margin-bottom: 8px;
+    padding: 20px;
+    min-width: 800px;
+
+    .report-date {
+        width: 10%;
+        margin-left: 5px;
+        margin-right: 5px;
+
+        .report-date-year {
+            font-size: 16px;
+        }
+
+        .report-date-monthdate {
+            font-size: 34px;
+        }
+    }
+
+    .forecasts {
+        width: 90%;
+        margin-left: 5px;
+        margin-right: 5px;
+        display: flex;
+        align-items: flex-start;
+    }
 }
 
 .card-skin {
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.report-date {
-    height: 100%;
-    width: 12%;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.forecasts {
-    width: 88%;
-    display: flex;
 }
 </style>

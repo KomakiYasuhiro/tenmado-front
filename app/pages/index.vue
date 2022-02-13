@@ -41,11 +41,10 @@ export default Vue.extend({
 })
 </script>
 
-<style>
+<style lang="scss" scoped>
 .condition {
   margin-bottom: 20px;
 }
-
 .cards {
   display: flex;
   flex-direction: column;
