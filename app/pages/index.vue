@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="condition">
-      <WeatherForecastCondition></WeatherForecastCondition>
+      <WeatherForecastCondition2></WeatherForecastCondition2>
     </div>
     <template v-if="$store.getters['weatherForecastStore/weatherForecast'] != null">
       <div class="cards">
@@ -17,12 +17,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import WeatherForecastCondition from '~/components/pages/weatherForecast/WeatherForecastCondition.vue'
+import WeatherForecastCondition2 from '~/components/pages/weatherForecast/WeatherForecastCondition2.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 export default Vue.extend({
 
   components: {
-    WeatherForecastCondition,
+    WeatherForecastCondition2,
     WeatherForecastCard,
   },
 

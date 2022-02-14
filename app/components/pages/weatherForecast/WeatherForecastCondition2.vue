@@ -3,59 +3,49 @@
 form.condform(@submit.prevent="submit")
     .settings
         .setting.meteorological-observatory
-            SelectComponent.select-meteorological-observatory(
-                v-model="selectedMeteorologicalObservatory"
-                :options="$store.getters['weatherForecastStore/meteorologicalObservatories']"
-                optionText="meteorologicalObservatoryName"
-                :returnObject="true"
-                @input="changeMeteorologicalObservatory"
-            )
+            .select.selectmark
+                select.select-meteorological-observatory(v-model="selectedMeteorologicalObservatory" @change="changeMeteorologicalObservatory")
+                    option(disabled selected :value="null")  選択してください
+                    option(v-for="meteorologicalObservatory in $store.getters['weatherForecastStore/meteorologicalObservatories']" :value="meteorologicalObservatory")
+                        | {{ meteorologicalObservatory.meteorologicalObservatoryName }}
         .setting.area
-            SelectComponent.select-area(
-                v-model="selectedLargeAreaCode"
-                :disabled="selectedMeteorologicalObservatory == null"
-                :options="selectedMeteorologicalObservatory != null ? selectedMeteorologicalObservatory.largeAreas : []"
-                optionText="largeAreaName"
-                optionValue="largeAreaCode"
-                @input="changeLargeArea"
-            )
+            .select.selectmark
+                select.select-area(v-model="selectedLargeAreaCode" :disabled="selectedMeteorologicalObservatory == null" @change="changeLargeArea")
+                    option(disabled selected :value="null")  選択してください
+                    template(v-if="selectedMeteorologicalObservatory != null")
+                        option(v-for="largeArea in selectedMeteorologicalObservatory.largeAreas" :value="largeArea.largeAreaCode")
+                            | {{ largeArea.largeAreaName }}
         .setting.interval
             .interval-source
                 .interval-source-year
-                    SelectComponent.select-interval-source-year(
-                        v-model="selectedIntervalSourceYear"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null"
-                        :options="selectSourceYears"
-                        @input="changeIntervalSourceYear"
-                    )
+                    .select.selectmark
+                        select.select-interval-source-year(v-model="selectedIntervalSourceYear" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null" @change="changeIntervalSourceYear")
+                            option(disabled select :value="null") 選択してください
+                            option(v-for="year in selectSourceYears" :value="year") {{ year }}
                     div 年
                 .interval-source-month
-                    SelectComponent.select-interval-source-month(
-                        v-model="selectedIntervalSourceMonth"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null"
-                        :options="selectSourceMonths"
-                        @input="changeIntervalSourceMonth"
-                    )
+                    .select.selectmark
+                        select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null" @change="changeIntervalSourceMonth")
+                            option(disabled select :value="null") 選択してください
+                            option(v-for="month in selectSourceMonths" :value="month") {{ month }}
                     div 月
                 .interval-source-day
-                    SelectComponent.select-interval-source-day(
-                        v-model="selectedIntervalSourceDay"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null"
-                        :options="selectSourceDays"
-                    )
+                    .select.selectmark
+                        select.select-interval-source-day(v-model="selectedIntervalSourceDay" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null")
+                            option(disabled select :value="null") 選択してください
+                            option(v-for="day in selectSourceDays" :value="day") {{ day }}
                     div 日
             .interval-target
                 .interval-target-date
-                    SelectComponent.select-interval-target-date(
-                        v-model="selectedIntervalTargetDate"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null"
-                        :options="dicisionTargetDates()"
-                        optionText="stringJpType"
-                        optionValue="dateType"
-                    )
+                    .select.selectmark
+                        select.select-interval-target-date(v-model="selectedIntervalTargetDate" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null")
+                            option(disabled select :value="null") 選択してください
+                            option(v-for="date in dicisionTargetDates()" :value="date") {{ date.stringJpType }}
+
 
     .submit
-        input(type="submit" value="表示")
+        .submit-button-area
+            input.submit-button.demo-button.demo-button.contained-button(type="submit" value="表示")
     
 </template>
 
@@ -86,7 +76,7 @@ interface DataType {
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
     selectedIntervalSourceDay: number | null
-    selectedIntervalTargetDate: Date | null
+    selectedIntervalTargetDate: IntervalTargetDate | null
 
     //予報取得期間
     targetPeriod: Array<string> | null
@@ -153,12 +143,10 @@ export default Vue.extend({
         },
 
         changeMeteorologicalObservatory(): void {
-            console.log('OK1')
             this.initializeSelectedLargeArea()
         },
 
         async changeLargeArea(): Promise<void> {
-            console.log('OK2')
             await this.fetchStartDate()
             await this.dicisionSourceYears()
         },
@@ -256,7 +244,7 @@ export default Vue.extend({
                     stringType: convertDateToString(tmpDate),
                     stringJpType: convertDateToJpString(tmpDate)
                 } as IntervalTargetDate)
-                if (tmpDate == this.$store.getters['weatherForecastStore/today']) {
+                if (tmpDate === this.$store.getters['weatherForecastStore/today']) {
                     break
                 }
             }
@@ -282,7 +270,7 @@ export default Vue.extend({
             const params = {
                 largeAreaCode: this.selectedLargeAreaCode,
                 reportDateFrom: convertDateToString(this.selectedIntervalSourceDate),
-                reportDateTo: convertDateToString(this.selectedIntervalTargetDate),
+                reportDateTo: convertDateToString(this.selectedIntervalTargetDate.dateType),
                 forecastdays: "7",
             };
 
@@ -341,14 +329,48 @@ export default Vue.extend({
                     align-items: center;
                 }
             }
+
+            .interval-target {
+                width: 100%;
+            }
         }
     }
     .submit {
+        width: 100%;
+        display: flex;
+        justify-content: center;
         .submit-button-area {
-            width: 100px;
+            width: 200px;
 
             .submit-button {
-                color: white;
+                width: 100%;
+            }
+
+            .demo-button {
+                font-size: 16px;
+                font-weight: bold;
+                text-transform: uppercase;
+                height: 36px;
+                min-width: 64px;
+                padding: 0 16px;
+                margin: 4px;
+                border-radius: 4px;
+            }
+
+            .demo-button.contained-button {
+                color: #fff;
+                background-color: #4e8fd3;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            }
+
+            .demo-button.contained-button:hover,
+            .demo-button.contained-button:focus {
+                background-color: #0062a1;
+                box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.4);
             }
         }
     }
