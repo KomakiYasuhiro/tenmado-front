@@ -1,16 +1,7 @@
 <template>
-  <v-app>
-    <v-main>
-      <v-container fluid>
-        <v-layout wrap>
-          <div class="condition">
-            <WeatherForecastCondition></WeatherForecastCondition>
-          </div>
-        </v-layout>
-      </v-container>
-    </v-main>
+  <div>
     <div class="condition">
-      <WeatherForecastCondition2></WeatherForecastCondition2>
+      <WeatherForecastCondition></WeatherForecastCondition>
     </div>
     <template v-if="$store.getters['weatherForecastStore/weatherForecast'] != null">
       <div class="cards">
@@ -21,19 +12,17 @@
         </template>
       </div>
     </template>
-  </v-app>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import WeatherForecastCondition from '~/components/pages/weatherForecast/WeatherForecastCondition.vue'
-import WeatherForecastCondition2 from '~/components/pages/weatherForecast/WeatherForecastCondition2.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 export default Vue.extend({
 
   components: {
     WeatherForecastCondition,
-    WeatherForecastCondition2,
     WeatherForecastCard,
   },
 

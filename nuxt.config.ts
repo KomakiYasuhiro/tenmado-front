@@ -8,9 +8,9 @@ const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - tenmado',
-    title: 'tenmado',
+    title: 'テンマド',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'jp'
     },
     meta: [
       { charset: 'utf-8' },
@@ -82,7 +82,19 @@ const config: NuxtConfig = {
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3
-        }
+        },
+        light: {
+          dark1: "#003972",
+          dark2: "#0062a1",
+          base: "#4e8fd3",
+          light1: "#95c0ec",
+          light2: "#c8f3ff",
+          accent: "#D3504E",
+          error: colors.deepOrange.accent4,
+          warning: colors.amber.base,
+          info: colors.teal.lighten1,
+          success: colors.green.accent3,
+        },
       }
     }
   },
