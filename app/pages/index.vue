@@ -46,7 +46,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .content {
-  width: 95%;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;

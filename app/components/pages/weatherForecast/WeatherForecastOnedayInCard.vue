@@ -43,12 +43,10 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
     width: 14.28%;
 
     .forecast-target-date {
-        font-size: 14px;
+        font-size: 10px;
     }
 
     .weather-fig {
@@ -57,7 +55,7 @@ export default Vue.extend({
     }
 
     .weather {
-        font-size: 14px;
+        font-size: 11px;
         margin-bottom: 6px;
     }
 
@@ -65,13 +63,14 @@ export default Vue.extend({
         margin-top: 6px;
         margin-bottom: 6px;
         display: flex;
+        align-items: center;
 
         .pop-num {
-            font-size: 14px;
+            font-size: 12px;
         }
         .pop-percent {
             margin-left: 5px;
-            font-size: 14px;
+            font-size: 10px;
         }
     }
 
@@ -80,12 +79,12 @@ export default Vue.extend({
         align-items: center;
 
         .temperature {
-            font-size: 20px;
+            font-size: 16px;
             margin-right: 5px;
         }
 
         .temprature-interval {
-            font-size: 10px;
+            font-size: 8px;
         }
     }
 

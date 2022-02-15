@@ -35,8 +35,8 @@ export default Vue.extend({
     align-items: stretch;
     margin-top: 8px;
     margin-bottom: 8px;
-    padding: 20px;
-    min-width: 800px;
+    padding: 15px 20px;
+    width: 1200px;
 
     .report-date {
         width: 10%;
@@ -48,7 +48,7 @@ export default Vue.extend({
         }
 
         .report-date-monthdate {
-            font-size: 34px;
+            font-size: 30px;
         }
     }
 

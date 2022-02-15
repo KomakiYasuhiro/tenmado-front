@@ -244,7 +244,7 @@ export default Vue.extend({
             if (this.selectedIntervalSourceDate == null) {
                 return []
             }
-            const days: number = 20
+            const days: number = 30
             let selectedIntervalSourceDate: Date = new Date(this.selectedIntervalSourceDate.getTime());
 
             let selectTargetDates = new Array<IntervalTargetDate>();
