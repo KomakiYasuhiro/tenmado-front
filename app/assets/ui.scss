@@ -3,8 +3,8 @@
 
 .select {
     overflow: hidden;
-    width: 90%;
-    margin: 2em auto;
+    // width: 90%;
+    // margin: 2em auto;
     text-align: center;
 }
 .select select {
@@ -82,7 +82,7 @@
         @include contained-button($color: #fff, $backgroundColor: #4e8fd3);
     }
     &.button-primary:hover,
-    .button.button-primary:focus {
+    &.button-primary:focus {
         @include contained-button-hover-focus($backgroundColor: #427ab6)
     }
     
