@@ -44,6 +44,7 @@ export default Vue.extend({
     flex-direction: column;
     align-items: center;
     width: 14.28%;
+    color: #333333;
 
     .forecast-target-date {
         font-size: 10px;

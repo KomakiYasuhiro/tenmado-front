@@ -42,6 +42,7 @@ export default Vue.extend({
         width: 10%;
         margin-left: 5px;
         margin-right: 5px;
+        color: #555555;
 
         .report-date-year {
             font-size: 16px;
