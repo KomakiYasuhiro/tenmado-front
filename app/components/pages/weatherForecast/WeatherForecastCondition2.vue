@@ -3,12 +3,14 @@
 form.condform(@submit.prevent="submit")
     .settings
         .setting.meteorological-observatory
+            label.selectlabel-meteorological-observatory 気象台
             .select.selectmark
                 select.select-meteorological-observatory(v-model="selectedMeteorologicalObservatory" @change="changeMeteorologicalObservatory")
                     option(disabled selected :value="null")  選択してください
                     option(v-for="meteorologicalObservatory in $store.getters['weatherForecastStore/meteorologicalObservatories']" :value="meteorologicalObservatory")
                         | {{ meteorologicalObservatory.meteorologicalObservatoryName }}
         .setting.area
+            label.selectlabel-area 地域
             .select.selectmark
                 select.select-area(v-model="selectedLargeAreaCode" :disabled="selectedMeteorologicalObservatory == null" @change="changeLargeArea")
                     option(disabled selected :value="null")  選択してください
@@ -16,36 +18,41 @@ form.condform(@submit.prevent="submit")
                         option(v-for="largeArea in selectedMeteorologicalObservatory.largeAreas" :value="largeArea.largeAreaCode")
                             | {{ largeArea.largeAreaName }}
         .setting.interval
-            .interval-source
-                .interval-source-year
-                    .select.selectmark
-                        select.select-interval-source-year(v-model="selectedIntervalSourceYear" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null" @change="changeIntervalSourceYear")
-                            option(disabled select :value="null") 選択してください
-                            option(v-for="year in selectSourceYears" :value="year") {{ year }}
-                    div 年
-                .interval-source-month
-                    .select.selectmark
-                        select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null" @change="changeIntervalSourceMonth")
-                            option(disabled select :value="null") 選択してください
-                            option(v-for="month in selectSourceMonths" :value="month") {{ month }}
-                    div 月
-                .interval-source-day
-                    .select.selectmark
-                        select.select-interval-source-day(v-model="selectedIntervalSourceDay" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null")
-                            option(disabled select :value="null") 選択してください
-                            option(v-for="day in selectSourceDays" :value="day") {{ day }}
-                    div 日
-            .interval-target
-                .interval-target-date
-                    .select.selectmark
-                        select.select-interval-target-date(v-model="selectedIntervalTargetDate" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null")
-                            option(disabled select :value="null") 選択してください
-                            option(v-for="date in dicisionTargetDates()" :value="date") {{ date.stringJpType }}
+            lavel.selectlabel-interval 予報期間
+            .interval-area
+                .interval-source
+                    .interval-source-year
+                        .select.selectmark
+                            select.select-interval-source-year(v-model="selectedIntervalSourceYear" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null" @change="changeIntervalSourceYear")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="year in selectSourceYears" :value="year") {{ year }}
+                        div 年
+                    .interval-source-month
+                        .select.selectmark
+                            select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null" @change="changeIntervalSourceMonth")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="month in selectSourceMonths" :value="month") {{ month }}
+                        div 月
+                    .interval-source-day
+                        .select.selectmark
+                            select.select-interval-source-day(v-model="selectedIntervalSourceDay" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="day in selectSourceDays" :value="day") {{ day }}
+                        div 日
+                .interval-target
+                    .interval-target-date
+                        .select.selectmark
+                            select.select-interval-target-date(v-model="selectedIntervalTargetDate" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="date in dicisionTargetDates()" :value="date") {{ date.stringJpType }}
 
 
     .submit
         .submit-button-area
             input.submit-button.button.button-primary(type="submit" value="表示")
+
+
+    .isosceles-triangle(v-if="isDisplay")
     
 </template>
 
@@ -81,6 +88,8 @@ interface DataType {
     //予報取得期間
     targetPeriod: Array<string> | null
     targetMenu: boolean
+
+    isDisplay: Boolean
 }
 
 export default Vue.extend({
@@ -111,6 +120,9 @@ export default Vue.extend({
             //予報取得期間
             targetPeriod: null,
             targetMenu: false,
+
+            // 表示しているか否か
+            isDisplay: false,
 
         }
     },
@@ -275,6 +287,8 @@ export default Vue.extend({
             };
 
             await this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
+
+            this.isDisplay = true
         },
 
     }
@@ -299,6 +313,8 @@ export default Vue.extend({
 
         .meteorological-observatory {
             width: 30%;
+            display: flex;
+            flex-direction: column;
         }
 
         .area {
@@ -307,31 +323,34 @@ export default Vue.extend({
 
         .interval {
             width: 40%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
 
-            .interval-source {
+            .interval-area {
                 display: flex;
+                flex-direction: column;
+                align-items: center;
 
-                .interval-source-year {
+                .interval-source {
                     display: flex;
-                    align-items: center;
+
+                    .interval-source-year {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .interval-source-month {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .interval-source-day {
+                        display: flex;
+                        align-items: center;
+                    }
                 }
 
-                .interval-source-month {
-                    display: flex;
-                    align-items: center;
+                .interval-target {
+                    width: 100%;
                 }
-
-                .interval-source-day {
-                    display: flex;
-                    align-items: center;
-                }
-            }
-
-            .interval-target {
-                width: 100%;
             }
         }
     }
@@ -346,6 +365,13 @@ export default Vue.extend({
                 width: 100%;
             }
         }
+    }
+
+    .isosceles-triangle {
+        margin-top: 20px;
+        border-top: 20px solid #4e8fd3;
+        border-right: 70px solid transparent;
+        border-left: 70px solid transparent;
     }
 }
 </style>
