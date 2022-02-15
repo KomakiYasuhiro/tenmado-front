@@ -12,3 +12,9 @@ export function convertDateToJpString(dt: Date): string {
     var d = ('00' + dt.getDate()).slice(-2);
     return (y + '年' + m + '月' + d + '日');
 }
+
+// 月末日を取得
+// 翌月の0日を指定することで、今月末日となる
+export function convertToLastDayOfTheMonth(dt: Date): Date {
+    return new Date(dt.getFullYear(), dt.getMonth() + 1, 0)
+}

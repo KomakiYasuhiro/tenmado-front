@@ -18,7 +18,7 @@ form.condform(@submit.prevent="submit")
                         option(v-for="largeArea in selectedMeteorologicalObservatory.largeAreas" :value="largeArea.largeAreaCode")
                             | {{ largeArea.largeAreaName }}
         .setting.interval
-            lavel.selectlabel-interval 予報期間
+            lavel.selectlabel-interval 対象年月
             .interval-area
                 .interval-source
                     .interval-source-year
@@ -29,22 +29,10 @@ form.condform(@submit.prevent="submit")
                         div 年
                     .interval-source-month
                         .select.selectmark
-                            select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null" @change="changeIntervalSourceMonth")
+                            select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null")
                                 option(disabled select :value="null") 選択してください
                                 option(v-for="month in selectSourceMonths" :value="month") {{ month }}
                         div 月
-                    .interval-source-day
-                        .select.selectmark
-                            select.select-interval-source-day(v-model="selectedIntervalSourceDay" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null")
-                                option(disabled select :value="null") 選択してください
-                                option(v-for="day in selectSourceDays" :value="day") {{ day }}
-                        div 日
-                .interval-target
-                    .interval-target-date
-                        .select.selectmark
-                            select.select-interval-target-date(v-model="selectedIntervalTargetDate" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null")
-                                option(disabled select :value="null") 選択してください
-                                option(v-for="date in dicisionTargetDates()" :value="date") {{ date.stringJpType }}
 
 
     .submit
@@ -60,7 +48,7 @@ form.condform(@submit.prevent="submit")
 <script lang="ts">
 import Vue from 'vue'
 import SelectComponent from '~/components/ui/SelectComponent.vue'
-import { convertDateToString, convertDateToJpString } from '~/utils/date'
+import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
 
 interface IntervalTargetDate {
@@ -77,13 +65,9 @@ interface DataType {
 
     selectSourceYears: Array<number>
     selectSourceMonths: Array<number>
-    selectSourceDays: Array<number>
-    selectTargetDates: Array<IntervalTargetDate>
 
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
-    selectedIntervalSourceDay: number | null
-    selectedIntervalTargetDate: IntervalTargetDate | null
 
     //予報取得期間
     targetPeriod: Array<string> | null
@@ -108,14 +92,9 @@ export default Vue.extend({
 
             selectSourceYears: [],
             selectSourceMonths: [],
-            selectSourceDays: [],
-            selectTargetDates: [],
 
             selectedIntervalSourceYear: null,
             selectedIntervalSourceMonth: null,
-            selectedIntervalSourceDay: null,
-
-            selectedIntervalTargetDate: null,
 
             //予報取得期間
             targetPeriod: null,
@@ -133,10 +112,17 @@ export default Vue.extend({
         },
 
         selectedIntervalSourceDate(): Date | null {
-            if (this.selectedIntervalSourceYear == null || this.selectedIntervalSourceMonth == null || this.selectedIntervalSourceDay == null) {
+            if (this.selectedIntervalSourceYear == null || this.selectedIntervalSourceMonth == null) {
                 return null
             }
-            return new Date(this.selectedIntervalSourceYear, this.selectedIntervalSourceMonth - 1, this.selectedIntervalSourceDay)
+            return new Date(this.selectedIntervalSourceYear, this.selectedIntervalSourceMonth - 1, 1)
+        },
+
+        selectedIntervalTargetDate(): Date | null {
+            if (this.selectedIntervalSourceDate == null) {
+                return null
+            }
+            return convertToLastDayOfTheMonth(this.selectedIntervalSourceDate)
         }
     },
 
@@ -150,10 +136,6 @@ export default Vue.extend({
             this.selectedIntervalSourceMonth = null
         },
 
-        initializeSelectedIntervalSourceDay(): void {
-            this.selectedIntervalSourceDay = null
-        },
-
         changeMeteorologicalObservatory(): void {
             this.initializeSelectedLargeArea()
         },
@@ -165,13 +147,7 @@ export default Vue.extend({
 
         changeIntervalSourceYear(): void {
             this.initializeSelectedIntervalSourceMonth()
-            this.initializeSelectedIntervalSourceDay()
             this.dicisionSourceMonths()
-        },
-
-        changeIntervalSourceMonth(): void {
-            this.dicisionSourceDays()
-            this.initializeSelectedIntervalSourceDay()
         },
 
         async fetchStartDate(): Promise<void> {
@@ -213,56 +189,6 @@ export default Vue.extend({
 
         },
 
-        dicisionSourceDays(): void {
-
-            const today = this.$store.getters['weatherForecastStore/today']
-            const todayYear = today.getFullYear()
-            const todayMonth = today.getMonth() + 1
-            const todayDay = today.getDate()
-
-            let startDate = this.$store.getters['weatherForecastStore/startDate']
-            let startDateYear = startDate.getFullYear()
-            let startDateMonth = startDate.getMonth() + 1
-            let startDateDay = startDate.getDate()
-
-            let rangeStartDay: number = 1
-            let rangeEndDay: number = new Date(Number(this.selectedIntervalSourceYear), Number(this.selectedIntervalSourceYear), 0).getDate()
-            if (this.selectedIntervalSourceYear == startDateYear && this.selectedIntervalSourceMonth == startDateMonth) {
-                // 選択した年月がstartDateと同じならば、startDateの月を最小値とするため
-                rangeStartDay = startDateDay
-            }
-            if (this.selectedIntervalSourceYear == todayYear && this.selectedIntervalSourceMonth == todayMonth) {
-                // 選択した年月が本日と同じならば、startDateの月を最小値とするため
-                rangeEndDay = todayDay
-            }
-
-            this.selectSourceDays = new Array(rangeEndDay - rangeStartDay + 1).fill(null).map((_, i) => i + rangeStartDay)
-
-        },
-
-        dicisionTargetDates(): Array<IntervalTargetDate> {
-            if (this.selectedIntervalSourceDate == null) {
-                return []
-            }
-            const days: number = 30
-            let selectedIntervalSourceDate: Date = new Date(this.selectedIntervalSourceDate.getTime());
-
-            let selectTargetDates = new Array<IntervalTargetDate>();
-            for (let i: number = 0; i < days; i++) {
-                let tmpDate: Date = new Date(selectedIntervalSourceDate.getTime())
-                tmpDate.setDate(selectedIntervalSourceDate.getDate() + i)
-                selectTargetDates.push({
-                    dateType: tmpDate,
-                    stringType: convertDateToString(tmpDate),
-                    stringJpType: convertDateToJpString(tmpDate)
-                } as IntervalTargetDate)
-                if (tmpDate === this.$store.getters['weatherForecastStore/today']) {
-                    break
-                }
-            }
-            return selectTargetDates
-        },
-
         async submit(): Promise<void> {
 
             if (this.selectedMeteorologicalObservatory == null) {
@@ -282,7 +208,7 @@ export default Vue.extend({
             const params = {
                 largeAreaCode: this.selectedLargeAreaCode,
                 reportDateFrom: convertDateToString(this.selectedIntervalSourceDate),
-                reportDateTo: convertDateToString(this.selectedIntervalTargetDate.dateType),
+                reportDateTo: convertDateToString(this.selectedIntervalTargetDate),
                 forecastdays: "7",
             };
 
