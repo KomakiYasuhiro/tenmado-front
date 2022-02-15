@@ -45,7 +45,7 @@ form.condform(@submit.prevent="submit")
 
     .submit
         .submit-button-area
-            input.submit-button.demo-button.demo-button.contained-button(type="submit" value="表示")
+            input.submit-button.button.button-primary(type="submit" value="表示")
     
 </template>
 
@@ -344,33 +344,6 @@ export default Vue.extend({
 
             .submit-button {
                 width: 100%;
-            }
-
-            .demo-button {
-                font-size: 16px;
-                font-weight: bold;
-                text-transform: uppercase;
-                height: 36px;
-                min-width: 64px;
-                padding: 0 16px;
-                margin: 4px;
-                border-radius: 4px;
-            }
-
-            .demo-button.contained-button {
-                color: #fff;
-                background-color: #4e8fd3;
-                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
-                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
-            }
-
-            .demo-button.contained-button:hover,
-            .demo-button.contained-button:focus {
-                background-color: #0062a1;
-                box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
-                    0 1px 10px 0 rgba(0, 0, 0, 0.12),
-                    0 2px 4px -1px rgba(0, 0, 0, 0.4);
             }
         }
     }
