@@ -1,18 +1,11 @@
-<template>
-  <div>
-    <div class="condition">
-      <WeatherForecastCondition2></WeatherForecastCondition2>
-    </div>
-    <template v-if="$store.getters['weatherForecastStore/weatherForecast'] != null">
-      <div class="cards">
-        <template
-          v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports"
-        >
-          <WeatherForecastCard :report="report"></WeatherForecastCard>
-        </template>
-      </div>
-    </template>
-  </div>
+<template lang="pug">
+artile
+  .condition
+    WeatherForecastCondition2
+  template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
+    .cards
+      template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
+        WeatherForecastCard(:report="report")
 </template>
 
 <script lang="ts">

@@ -1,13 +1,10 @@
-<template>
-  <v-app>
-    <Header></Header>
-    <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
-    </v-main>
-    <Footer></Footer>
-  </v-app>
+<template lang="pug">
+.app
+  Header
+  main
+    Nuxt
+  Footer
+
 </template>
 
 <script lang="ts">
@@ -24,10 +21,17 @@ export default Vue.extend({
 
   data() {
     return {
-      clipped: true,
-      fixed: false,
-      title: 'tenmado'
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+</style>

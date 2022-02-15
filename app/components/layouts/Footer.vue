@@ -1,7 +1,8 @@
-<template>
-    <v-footer :absolute="fixed" app>
-        <span>&copy; {{ new Date().getFullYear() }} sugimoto kaiji,komaki yasuhiro</span>
-    </v-footer>
+<template lang="pug">
+footer
+    .footer
+        .footer-message
+            p &copy; {{ new Date().getFullYear() }} sugimoto kaiji,komaki yasuhiro
 </template>
 
 
@@ -19,5 +20,19 @@ export default Vue.extend({
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+footer {
+    margin-top: auto;
+}
+.footer {
+    display: flex;
+    align-items: center;
+    background-color: #4e8fd3;
+    color: #fff;
+    height: 35px;
+}
+
+.footer-message {
+    padding-left: 20px;
+}
 </style>

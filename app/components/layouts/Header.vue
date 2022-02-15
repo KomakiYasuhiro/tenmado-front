@@ -1,8 +1,8 @@
-<template>
-    <v-app-bar :clipped-left="clipped" fixed app>
-        <v-toolbar-title v-text="title" />
-        <v-spacer />
-    </v-app-bar>
+<template lang="pug">
+header
+    .header
+        h1
+            img.header-logo(src="~/assets/image/tenmado_logo1_2.svg" alt="テンマド")
 </template>
 
 
@@ -22,5 +22,14 @@ export default Vue.extend({
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.header {
+    height: 100px;
+    padding-top: 17px;
+    border-bottom: 3px solid #4e8fd3;
+}
+.header-logo {
+    margin-left: 20px;
+    height: 80px;
+}
 </style>
