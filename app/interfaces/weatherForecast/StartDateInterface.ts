@@ -1,3 +1,3 @@
 export interface StartDateInterface {
-    startDate: Date
+    startDate: string
 }

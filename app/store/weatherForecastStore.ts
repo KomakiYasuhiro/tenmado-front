@@ -9,13 +9,15 @@ import { StartDateInterface } from '~/interfaces/weatherForecast/StartDateInterf
 interface WeatherForecastStateInterface {
     weatherForecast: WeatherForecastInterface | null
     meteorologicalObservatories: Array<MeteorologicalObservatoryInterface> | null
-    startDate: string | null
+    startDate: Date | null
+    today: Date
 }
 
 export const state = (): WeatherForecastStateInterface => ({
     weatherForecast: null,
     meteorologicalObservatories: null,
     startDate: null,
+    today: new Date()
 })
 
 export type WeatherForecastState = ReturnType<typeof state>
@@ -24,6 +26,7 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
     weatherForecast: state => state.weatherForecast,
     meteorologicalObservatories: state => state.meteorologicalObservatories,
     startDate: state => state.startDate,
+    today: state => state.today
 }
 
 export const mutations: MutationTree<WeatherForecastState> = {
@@ -33,7 +36,7 @@ export const mutations: MutationTree<WeatherForecastState> = {
     setMeteorologicalObservatories: (state: WeatherForecastState, meteorologicalObservatories: Array<MeteorologicalObservatoryInterface>) => {
         state.meteorologicalObservatories = meteorologicalObservatories
     },
-    setStartDate: (state: WeatherForecastState, startDate: string) => {
+    setStartDate: (state: WeatherForecastState, startDate: Date) => {
         state.startDate = startDate
     },
 
@@ -74,7 +77,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
     async fetchStartDate({ commit }, startDateQueryParams: StartDateQueryParamsInterface) {
         try {
             const startDate: StartDateInterface = await this.$axios.$get('/api/weatherforecast/startdate', { params: startDateQueryParams })
-            commit('setStartDate', startDate.startDate.toString())
+            commit('setStartDate', new Date(startDate.startDate))
         } catch (e) {
             console.log(`startDate取得失敗 ${e}`);
         }
