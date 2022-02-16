@@ -55,6 +55,7 @@ const config: NuxtConfig = {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/gtm',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -69,34 +70,9 @@ const config: NuxtConfig = {
     },
   },
 
-  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-  vuetify: {
-    customVariables: ['~/assets/variables.scss'],
-    theme: {
-      dark: false,
-      themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-        },
-        light: {
-          dark1: "#003972",
-          dark2: "#0062a1",
-          base: "#4e8fd3",
-          light1: "#95c0ec",
-          light2: "#c8f3ff",
-          accent: "#D3504E",
-          error: colors.deepOrange.accent4,
-          warning: colors.amber.base,
-          info: colors.teal.lighten1,
-          success: colors.green.accent3,
-        },
-      }
+  publicRuntimeConfig: {
+    gtm: {
+      id: process.env.GOOGLE_TAG_MANAGER_ID
     }
   },
 
