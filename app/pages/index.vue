@@ -1,5 +1,5 @@
 <template lang="pug">
-artile
+article
   Heading(:value="headingValue")
   .content
     .condition
@@ -8,6 +8,7 @@ artile
       .cards
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
+  Source(:sources="sources")
 </template>
 
 <script lang="ts">
@@ -15,9 +16,11 @@ import Vue from 'vue'
 import Heading from '~/components/pages/common/Heading.vue'
 import WeatherForecastCondition2 from '~/components/pages/weatherForecast/WeatherForecastCondition2.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
+import Source from '~/components/pages/common/Source.vue'
 
 interface DataType {
   headingValue: string
+  sources: Array<string>
 }
 
 export default Vue.extend({
@@ -26,13 +29,17 @@ export default Vue.extend({
     Heading,
     WeatherForecastCondition2,
     WeatherForecastCard,
+    Source,
   },
 
 
 
   data(): DataType {
     return {
-      headingValue: "過去の天気予報を検索"
+      headingValue: "過去の天気予報を検索",
+      sources: [
+        "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
+      ]
     }
   },
 
@@ -45,6 +52,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
+article {
+  display: flex;
+  flex-direction: column;
+  min-height: 85vh;
+}
 .content {
   width: 100%;
   margin: 0 auto;
