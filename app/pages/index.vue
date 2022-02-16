@@ -8,6 +8,7 @@ article
       .cards
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
+  Contact(:contacts="contacts")
   Source(:sources="sources")
 </template>
 
@@ -17,10 +18,12 @@ import Heading from '~/components/pages/common/Heading.vue'
 import WeatherForecastCondition2 from '~/components/pages/weatherForecast/WeatherForecastCondition2.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
+import Contact from '~/components/pages/common/Contact.vue'
 
 interface DataType {
   headingValue: string
   sources: Array<string>
+  contacts: Array<string>
 }
 
 export default Vue.extend({
@@ -30,6 +33,7 @@ export default Vue.extend({
     WeatherForecastCondition2,
     WeatherForecastCard,
     Source,
+    Contact,
   },
 
 
@@ -39,6 +43,9 @@ export default Vue.extend({
       headingValue: "過去の天気予報を検索",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
+      ],
+      contacts: [
+        "本サービスについてのお問い合わせや<br>上記の過去天気予報情報のデータ提供について等<br>お気軽にご連絡ください。<br>"
       ]
     }
   },
