@@ -18,7 +18,7 @@ form.condform(@submit.prevent="submit")
                         option(v-for="largeArea in selectedMeteorologicalObservatory.largeAreas" :value="largeArea.largeAreaCode")
                             | {{ largeArea.largeAreaName }}
         .setting.interval
-            lavel.selectlabel-interval 対象年月
+            label.selectlabel-interval 対象年月
             .interval-area
                 .interval-source
                     .interval-source-year
@@ -26,13 +26,13 @@ form.condform(@submit.prevent="submit")
                             select.select-interval-source-year(v-model="selectedIntervalSourceYear" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null" @change="changeIntervalSourceYear")
                                 option(disabled select :value="null") 選択してください
                                 option(v-for="year in selectSourceYears" :value="year") {{ year }}
-                        div 年
+                        .interval-source-unit.interval-source-unit-year 年
                     .interval-source-month
                         .select.selectmark
                             select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null")
                                 option(disabled select :value="null") 選択してください
                                 option(v-for="month in selectSourceMonths" :value="month") {{ month }}
-                        div 月
+                        .interval-source-unit.interval-source-unit-month 月
 
 
     .submit
@@ -51,11 +51,6 @@ import SelectComponent from '~/components/ui/SelectComponent.vue'
 import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
 
-interface IntervalTargetDate {
-    dateType: Date
-    stringType: string
-    stringJpType: string
-}
 
 interface DataType {
     meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
@@ -227,6 +222,7 @@ export default Vue.extend({
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: #333333;
 
     .settings {
         width: 100%;
@@ -234,7 +230,11 @@ export default Vue.extend({
         justify-content: space-between;
 
         .setting {
-            margin: 10px;
+            margin: 20px;
+
+            label {
+                padding-left: 3px;
+            }
         }
 
         .meteorological-observatory {
@@ -268,14 +268,9 @@ export default Vue.extend({
                         align-items: center;
                     }
 
-                    .interval-source-day {
-                        display: flex;
-                        align-items: center;
+                    .interval-source-unit {
+                        margin: 0px 5px;
                     }
-                }
-
-                .interval-target {
-                    width: 100%;
                 }
             }
         }
@@ -284,8 +279,10 @@ export default Vue.extend({
         width: 100%;
         display: flex;
         justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
         .submit-button-area {
-            width: 200px;
+            width: 300px;
 
             .submit-button {
                 width: 100%;

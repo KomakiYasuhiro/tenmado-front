@@ -54,7 +54,7 @@ export default Vue.extend({
 }
 .condition {
   margin-top: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 .cards {
   display: flex;
