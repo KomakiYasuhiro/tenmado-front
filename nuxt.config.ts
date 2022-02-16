@@ -8,9 +8,9 @@ const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - tenmado',
-    title: 'tenmado',
+    title: 'テンマド',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'jp'
     },
     meta: [
       { charset: 'utf-8' },
@@ -19,12 +19,13 @@ const config: NuxtConfig = {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/svg+xml', href: '~/assets/image/tenmado_icon1.svg' }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '@/assets/global.scss'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -32,7 +33,15 @@ const config: NuxtConfig = {
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
-  components: true,
+  // componentsフォルダが階層になっている場合、例えば/components/util/SampleComponent.vueとなっている場合は、 
+  // 基本<util-sample-component />のようにフォルダ名を含めます。
+  // フォルダ階層を無視して<sample-component />としたい場合、以下のように設定する
+  components: [
+    {
+      path: '@/components/',
+      pathPrefix: false
+    }
+  ],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
@@ -74,7 +83,19 @@ const config: NuxtConfig = {
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3
-        }
+        },
+        light: {
+          dark1: "#003972",
+          dark2: "#0062a1",
+          base: "#4e8fd3",
+          light1: "#95c0ec",
+          light2: "#c8f3ff",
+          accent: "#D3504E",
+          error: colors.deepOrange.accent4,
+          warning: colors.amber.base,
+          info: colors.teal.lighten1,
+          success: colors.green.accent3,
+        },
       }
     }
   },

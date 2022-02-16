@@ -1,4 +1,4 @@
-interface ForecastInterface {
+export interface ForecastInterface {
     forecastTargetDate: Date
     weatherCode: string
     weather: string
@@ -13,7 +13,7 @@ interface ForecastInterface {
     highestTemperatureUpper: number
 }
 
-interface ReportInterface {
+export interface ReportInterface {
     reportDate: Date,
     forecastTargetDateFrom: Date
     forecastTargetDateTo: Date
