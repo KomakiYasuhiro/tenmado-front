@@ -8,6 +8,7 @@ article
       .cards
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
+  hr.line
   Contact(:contacts="contacts")
   Source(:sources="sources")
 </template>
