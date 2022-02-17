@@ -2,7 +2,7 @@
 header
     .header
         h1
-            img.header-logo(src="~/assets/image/tenmado_logo1_2.svg" alt="テンマド")
+            img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド")
 </template>
 
 
