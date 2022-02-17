@@ -1,4 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
 import { NuxtConfig } from '@nuxt/types'
 
 const config: NuxtConfig = {
@@ -19,7 +18,7 @@ const config: NuxtConfig = {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '~/assets/image/tenmado_icon1.svg' }
+      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' }
     ]
   },
 
@@ -47,8 +46,6 @@ const config: NuxtConfig = {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
-    // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -69,36 +66,6 @@ const config: NuxtConfig = {
     },
   },
 
-  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-  vuetify: {
-    customVariables: ['~/assets/variables.scss'],
-    theme: {
-      dark: false,
-      themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-        },
-        light: {
-          dark1: "#003972",
-          dark2: "#0062a1",
-          base: "#4e8fd3",
-          light1: "#95c0ec",
-          light2: "#c8f3ff",
-          accent: "#D3504E",
-          error: colors.deepOrange.accent4,
-          warning: colors.amber.base,
-          info: colors.teal.lighten1,
-          success: colors.green.accent3,
-        },
-      }
-    }
-  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
