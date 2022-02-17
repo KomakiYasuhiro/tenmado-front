@@ -7,19 +7,7 @@ header
 
 
 <script lang="ts">
-import Vue from 'vue'
-interface DataType {
-    clipped: boolean,
-    title: string
-}
-export default Vue.extend({
-    data(): DataType {
-        return {
-            clipped: true,
-            title: 'tenmado'
-        }
-    }
-})
+
 </script>
 
 <style lang="scss" scoped>
