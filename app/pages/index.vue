@@ -3,11 +3,12 @@ article
   Heading(:value="headingValue")
   .content
     .condition
-      WeatherForecastCondition2
+      WeatherForecastCondition
     template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
       .cards
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
+  hr.line
   Contact(:contacts="contacts")
   Source(:sources="sources")
 </template>
@@ -15,7 +16,7 @@ article
 <script lang="ts">
 import Vue from 'vue'
 import Heading from '~/components/pages/common/Heading.vue'
-import WeatherForecastCondition2 from '~/components/pages/weatherForecast/WeatherForecastCondition2.vue'
+import WeatherForecastCondition from '~/components/pages/weatherForecast/WeatherForecastCondition.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
 import Contact from '~/components/pages/common/Contact.vue'
@@ -30,7 +31,7 @@ export default Vue.extend({
 
   components: {
     Heading,
-    WeatherForecastCondition2,
+    WeatherForecastCondition,
     WeatherForecastCard,
     Source,
     Contact,

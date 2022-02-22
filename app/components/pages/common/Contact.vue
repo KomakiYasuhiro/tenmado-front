@@ -19,7 +19,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .contacts {
-    margin-top: auto;
+    // margin-top: auto;
     color: #333333;
     font-size: 12px;
     text-align: center;
@@ -29,7 +29,7 @@ export default Vue.extend({
 
 .btn,
 a.btn,
-button.btn {    
+button.btn {
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.5;
@@ -49,7 +49,7 @@ button.btn {
     letter-spacing: 0.1em;
     color: #212529;
     border-radius: 0.5rem;
-    margin-top: 10px;   
+    margin-top: 10px;
 }
 a.btn-flat {
     overflow: hidden;
@@ -68,9 +68,9 @@ a.btn-flat:before {
     left: 0;
     width: 100px;
     height: 90px;
-    content: '';
-    -webkit-transition: all .5s ease-in-out;
-    transition: all .5s ease-in-out;
+    content: "";
+    -webkit-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
     -webkit-transform: translateX(-80%) translateY(-25px);
     transform: translateX(-80%) translateY(-59px);
     border-radius: 50%;
@@ -83,5 +83,4 @@ a.btn-flat:hover:before {
     -webkit-transform: translateX(-1%) translateY(-175px);
     transform: translateX(-1%) translateY(-175px);
 }
-
 </style>

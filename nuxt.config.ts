@@ -1,4 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
 import { NuxtConfig } from '@nuxt/types'
 
 const config: NuxtConfig = {
@@ -19,13 +18,13 @@ const config: NuxtConfig = {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '~/assets/image/tenmado_icon1.svg' }
+      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' }
     ]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '@/assets/global.scss'
+    '@/assets/scss/global.scss'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -47,8 +46,6 @@ const config: NuxtConfig = {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
-    // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
