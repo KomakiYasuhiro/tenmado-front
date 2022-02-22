@@ -20,6 +20,7 @@ import WeatherForecastCondition from '~/components/pages/weatherForecast/Weather
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
 import Contact from '~/components/pages/common/Contact.vue'
+import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
 
 interface DataType {
   headingValue: string
@@ -51,8 +52,36 @@ export default Vue.extend({
     }
   },
 
-  async fetch({ store }) {
+  async fetch({ store, query }) {
     await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
+
+    // クエリパラメータがない場合は初期画面
+    if (query == null) {
+      return
+    }
+
+    // クエリパラメータがある場合はまずはクエリパラメータの内容をチェック
+    // 全部passしたらクエリパラメータの内容を基に描画
+    if (
+      (query.meteorologicalObservatoryCode == null) || (query.largeAreaCode == null) || (query.intervalSourceYear == null) || (query.intervalSourceMonth == null)
+    ) {
+      return
+    }
+
+    const condition: WeatherForecastConditionInterface = {
+      meteorologicalObservatoryCode: query.meteorologicalObservatoryCode as string,
+      largeAreaCode: query.largeAreaCode as string,
+      intervalSourceYear: query.intervalSourceYear as string,
+      intervalSourceMonth: query.intervalSourceMonth as string,
+    }
+
+    await store.dispatch('weatherForecastStore/setCondition', condition)
+
+    const params = {
+      largeAreaCode: condition.largeAreaCode,
+    }
+    await store.dispatch('weatherForecastStore/fetchStartDate', params)
+
   },
 
 
