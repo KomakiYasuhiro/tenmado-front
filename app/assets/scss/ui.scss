@@ -93,3 +93,17 @@
         @include contained-button-hover-focus($backgroundColor: #b84442)
     }
 }
+
+// 水平線
+
+hr.line {
+    border: 0;
+    border-top: 1px solid #cccccc;
+    height: 0;
+    width: 90%;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 0;
+}

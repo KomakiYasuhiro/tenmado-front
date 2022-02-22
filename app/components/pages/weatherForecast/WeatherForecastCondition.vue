@@ -3,59 +3,44 @@
 form.condform(@submit.prevent="submit")
     .settings
         .setting.meteorological-observatory
-            SelectComponent.select-meteorological-observatory(
-                v-model="selectedMeteorologicalObservatory"
-                :options="$store.getters['weatherForecastStore/meteorologicalObservatories']"
-                optionText="meteorologicalObservatoryName"
-                :returnObject="true"
-                @input="changeMeteorologicalObservatory"
-            )
+            label.selectlabel-meteorological-observatory 気象台
+            .select.selectmark
+                select.select-meteorological-observatory(v-model="selectedMeteorologicalObservatory" @change="changeMeteorologicalObservatory")
+                    option(disabled selected :value="null")  選択してください
+                    option(v-for="meteorologicalObservatory in $store.getters['weatherForecastStore/meteorologicalObservatories']" :value="meteorologicalObservatory")
+                        | {{ meteorologicalObservatory.meteorologicalObservatoryName }}
         .setting.area
-            SelectComponent.select-area(
-                v-model="selectedLargeAreaCode"
-                :disabled="selectedMeteorologicalObservatory == null"
-                :options="selectedMeteorologicalObservatory != null ? selectedMeteorologicalObservatory.largeAreas : []"
-                optionText="largeAreaName"
-                optionValue="largeAreaCode"
-                @input="changeLargeArea"
-            )
+            label.selectlabel-area 地域
+            .select.selectmark
+                select.select-area(v-model="selectedLargeAreaCode" :disabled="selectedMeteorologicalObservatory == null" @change="changeLargeArea")
+                    option(disabled selected :value="null")  選択してください
+                    template(v-if="selectedMeteorologicalObservatory != null")
+                        option(v-for="largeArea in selectedMeteorologicalObservatory.largeAreas" :value="largeArea.largeAreaCode")
+                            | {{ largeArea.largeAreaName }}
         .setting.interval
-            .interval-source
-                .interval-source-year
-                    SelectComponent.select-interval-source-year(
-                        v-model="selectedIntervalSourceYear"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null"
-                        :options="selectSourceYears"
-                        @input="changeIntervalSourceYear"
-                    )
-                    div 年
-                .interval-source-month
-                    SelectComponent.select-interval-source-month(
-                        v-model="selectedIntervalSourceMonth"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null"
-                        :options="selectSourceMonths"
-                        @input="changeIntervalSourceMonth"
-                    )
-                    div 月
-                .interval-source-day
-                    SelectComponent.select-interval-source-day(
-                        v-model="selectedIntervalSourceDay"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null"
-                        :options="selectSourceDays"
-                    )
-                    div 日
-            .interval-target
-                .interval-target-date
-                    SelectComponent.select-interval-target-date(
-                        v-model="selectedIntervalTargetDate"
-                        :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null || selectedIntervalSourceMonth == null || selectedIntervalSourceDate == null"
-                        :options="dicisionTargetDates()"
-                        optionText="stringJpType"
-                        optionValue="dateType"
-                    )
+            label.selectlabel-interval 対象年月
+            .interval-area
+                .interval-source
+                    .interval-source-year
+                        .select.selectmark
+                            select.select-interval-source-year(v-model="selectedIntervalSourceYear" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null" @change="changeIntervalSourceYear")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="year in selectSourceYears" :value="year") {{ year }}
+                        .interval-source-unit.interval-source-unit-year 年
+                    .interval-source-month
+                        .select.selectmark
+                            select.select-interval-source-month(v-model="selectedIntervalSourceMonth" :disabled="selectedMeteorologicalObservatory == null || selectedLargeAreaCode == null || selectedIntervalSourceYear == null")
+                                option(disabled select :value="null") 選択してください
+                                option(v-for="month in selectSourceMonths" :value="month") {{ month }}
+                        .interval-source-unit.interval-source-unit-month 月
+
 
     .submit
-        input(type="submit" value="表示")
+        .submit-button-area
+            input.submit-button.button.button-primary(type="submit" value="表示")
+
+
+    .isosceles-triangle(v-if="isDisplay")
     
 </template>
 
@@ -63,14 +48,9 @@ form.condform(@submit.prevent="submit")
 <script lang="ts">
 import Vue from 'vue'
 import SelectComponent from '~/components/ui/SelectComponent.vue'
-import { convertDateToString, convertDateToJpString } from '~/utils/date'
+import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
 
-interface IntervalTargetDate {
-    dateType: Date
-    stringType: string
-    stringJpType: string
-}
 
 interface DataType {
     meteorologicalObservatoryItems?: Array<MeteorologicalObservatoryInterface>
@@ -80,17 +60,15 @@ interface DataType {
 
     selectSourceYears: Array<number>
     selectSourceMonths: Array<number>
-    selectSourceDays: Array<number>
-    selectTargetDates: Array<IntervalTargetDate>
 
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
-    selectedIntervalSourceDay: number | null
-    selectedIntervalTargetDate: Date | null
 
     //予報取得期間
     targetPeriod: Array<string> | null
     targetMenu: boolean
+
+    isDisplay: Boolean
 }
 
 export default Vue.extend({
@@ -109,18 +87,16 @@ export default Vue.extend({
 
             selectSourceYears: [],
             selectSourceMonths: [],
-            selectSourceDays: [],
-            selectTargetDates: [],
 
             selectedIntervalSourceYear: null,
             selectedIntervalSourceMonth: null,
-            selectedIntervalSourceDay: null,
-
-            selectedIntervalTargetDate: null,
 
             //予報取得期間
             targetPeriod: null,
             targetMenu: false,
+
+            // 表示しているか否か
+            isDisplay: false,
 
         }
     },
@@ -131,10 +107,17 @@ export default Vue.extend({
         },
 
         selectedIntervalSourceDate(): Date | null {
-            if (this.selectedIntervalSourceYear == null || this.selectedIntervalSourceMonth == null || this.selectedIntervalSourceDay == null) {
+            if (this.selectedIntervalSourceYear == null || this.selectedIntervalSourceMonth == null) {
                 return null
             }
-            return new Date(this.selectedIntervalSourceYear, this.selectedIntervalSourceMonth - 1, this.selectedIntervalSourceDay)
+            return new Date(this.selectedIntervalSourceYear, this.selectedIntervalSourceMonth - 1, 1)
+        },
+
+        selectedIntervalTargetDate(): Date | null {
+            if (this.selectedIntervalSourceDate == null) {
+                return null
+            }
+            return convertToLastDayOfTheMonth(this.selectedIntervalSourceDate)
         }
     },
 
@@ -148,30 +131,18 @@ export default Vue.extend({
             this.selectedIntervalSourceMonth = null
         },
 
-        initializeSelectedIntervalSourceDay(): void {
-            this.selectedIntervalSourceDay = null
-        },
-
         changeMeteorologicalObservatory(): void {
-            console.log('OK1')
             this.initializeSelectedLargeArea()
         },
 
         async changeLargeArea(): Promise<void> {
-            console.log('OK2')
             await this.fetchStartDate()
             await this.dicisionSourceYears()
         },
 
         changeIntervalSourceYear(): void {
             this.initializeSelectedIntervalSourceMonth()
-            this.initializeSelectedIntervalSourceDay()
             this.dicisionSourceMonths()
-        },
-
-        changeIntervalSourceMonth(): void {
-            this.dicisionSourceDays()
-            this.initializeSelectedIntervalSourceDay()
         },
 
         async fetchStartDate(): Promise<void> {
@@ -213,56 +184,6 @@ export default Vue.extend({
 
         },
 
-        dicisionSourceDays(): void {
-
-            const today = this.$store.getters['weatherForecastStore/today']
-            const todayYear = today.getFullYear()
-            const todayMonth = today.getMonth() + 1
-            const todayDay = today.getDate()
-
-            let startDate = this.$store.getters['weatherForecastStore/startDate']
-            let startDateYear = startDate.getFullYear()
-            let startDateMonth = startDate.getMonth() + 1
-            let startDateDay = startDate.getDate()
-
-            let rangeStartDay: number = 1
-            let rangeEndDay: number = new Date(Number(this.selectedIntervalSourceYear), Number(this.selectedIntervalSourceYear), 0).getDate()
-            if (this.selectedIntervalSourceYear == startDateYear && this.selectedIntervalSourceMonth == startDateMonth) {
-                // 選択した年月がstartDateと同じならば、startDateの月を最小値とするため
-                rangeStartDay = startDateDay
-            }
-            if (this.selectedIntervalSourceYear == todayYear && this.selectedIntervalSourceMonth == todayMonth) {
-                // 選択した年月が本日と同じならば、startDateの月を最小値とするため
-                rangeEndDay = todayDay
-            }
-
-            this.selectSourceDays = new Array(rangeEndDay - rangeStartDay + 1).fill(null).map((_, i) => i + rangeStartDay)
-
-        },
-
-        dicisionTargetDates(): Array<IntervalTargetDate> {
-            if (this.selectedIntervalSourceDate == null) {
-                return []
-            }
-            const days: number = 20
-            let selectedIntervalSourceDate: Date = new Date(this.selectedIntervalSourceDate.getTime());
-
-            let selectTargetDates = new Array<IntervalTargetDate>();
-            for (let i: number = 0; i < days; i++) {
-                let tmpDate: Date = new Date(selectedIntervalSourceDate.getTime())
-                tmpDate.setDate(selectedIntervalSourceDate.getDate() + i)
-                selectTargetDates.push({
-                    dateType: tmpDate,
-                    stringType: convertDateToString(tmpDate),
-                    stringJpType: convertDateToJpString(tmpDate)
-                } as IntervalTargetDate)
-                if (tmpDate == this.$store.getters['weatherForecastStore/today']) {
-                    break
-                }
-            }
-            return selectTargetDates
-        },
-
         async submit(): Promise<void> {
 
             if (this.selectedMeteorologicalObservatory == null) {
@@ -287,6 +208,8 @@ export default Vue.extend({
             };
 
             await this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
+
+            this.isDisplay = true
         },
 
     }
@@ -299,6 +222,7 @@ export default Vue.extend({
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: #333333;
 
     .settings {
         width: 100%;
@@ -306,11 +230,17 @@ export default Vue.extend({
         justify-content: space-between;
 
         .setting {
-            margin: 10px;
+            margin: 20px;
+
+            label {
+                padding-left: 3px;
+            }
         }
 
         .meteorological-observatory {
             width: 30%;
+            display: flex;
+            flex-direction: column;
         }
 
         .area {
@@ -319,38 +249,52 @@ export default Vue.extend({
 
         .interval {
             width: 40%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
 
-            .interval-source {
+            .interval-area {
                 display: flex;
+                flex-direction: column;
+                align-items: center;
 
-                .interval-source-year {
+                .interval-source {
                     display: flex;
-                    align-items: center;
-                }
 
-                .interval-source-month {
-                    display: flex;
-                    align-items: center;
-                }
+                    .interval-source-year {
+                        display: flex;
+                        align-items: center;
+                    }
 
-                .interval-source-day {
-                    display: flex;
-                    align-items: center;
+                    .interval-source-month {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .interval-source-unit {
+                        margin: 0px 5px;
+                    }
                 }
             }
         }
     }
     .submit {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
         .submit-button-area {
-            width: 100px;
+            width: 300px;
 
             .submit-button {
-                color: white;
+                width: 100%;
             }
         }
+    }
+
+    .isosceles-triangle {
+        margin-top: 20px;
+        border-top: 20px solid #4e8fd3;
+        border-right: 70px solid transparent;
+        border-left: 70px solid transparent;
     }
 }
 </style>
