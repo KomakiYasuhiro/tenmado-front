@@ -23,6 +23,8 @@ export default Vue.extend({
     padding-left: 20px;
     display: flex;
     align-items: center;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
 }
 
 .heading-value {
