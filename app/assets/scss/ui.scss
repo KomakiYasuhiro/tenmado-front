@@ -92,6 +92,10 @@
     &.button-accent:focus {
         @include contained-button-hover-focus($backgroundColor: #b84442)
     }
+
+    &.contact {
+        width: 150px;
+    }
 }
 
 // 水平線
