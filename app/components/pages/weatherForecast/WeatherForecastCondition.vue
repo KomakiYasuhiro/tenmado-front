@@ -64,10 +64,6 @@ interface DataType {
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
 
-    //予報取得期間
-    // targetPeriod: Array<string> | null
-    // targetMenu: boolean
-
     isDisplay: Boolean
 }
 
@@ -100,10 +96,6 @@ export default Vue.extend({
             selectedIntervalSourceYear: selectedIntervalSourceYear,
             selectedIntervalSourceMonth: selectedIntervalSourceMonth,
 
-            //予報取得期間
-            // targetPeriod: null,
-            // targetMenu: false,
-
             // 表示しているか否か
             isDisplay: false,
 
@@ -111,9 +103,6 @@ export default Vue.extend({
     },
 
     computed: {
-        // activateSubmit(): boolean {
-        //     return this.selectedLargeAreaCode && this.targetPeriod ? false : true;
-        // },
     },
 
     methods: {
