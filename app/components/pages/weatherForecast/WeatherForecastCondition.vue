@@ -40,7 +40,7 @@ form.condform(@submit.prevent="submit")
             input.submit-button.button.button-primary(type="submit" value="表示")
 
 
-    .isosceles-triangle(v-if="isDisplay")
+    .isosceles-triangle(v-if="$store.getters['weatherForecastStore/condition']")
     
 </template>
 
@@ -48,8 +48,8 @@ form.condform(@submit.prevent="submit")
 <script lang="ts">
 import Vue from 'vue'
 import SelectComponent from '~/components/ui/SelectComponent.vue'
-import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
+import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
 
 
 interface DataType {
@@ -64,11 +64,6 @@ interface DataType {
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
 
-    //予報取得期間
-    targetPeriod: Array<string> | null
-    targetMenu: boolean
-
-    isDisplay: Boolean
 }
 
 export default Vue.extend({
@@ -79,46 +74,31 @@ export default Vue.extend({
 
     data(): DataType {
 
+        // 条件を格納しているstoreに内容があればそれをフォームの初期値にする
+        const condition: WeatherForecastConditionInterface = this.$store.getters['weatherForecastStore/condition']
+        const selectedMeteorologicalObservatory = condition ? this.$store.getters['weatherForecastStore/meteorologicalObservatories'].find((v) => v.meteorologicalObservatoryCode === condition.meteorologicalObservatoryCode) : null
+        const selectedLargeAreaCode = condition ? condition.largeAreaCode : null
+        const selectedIntervalSourceYear = condition ? Number(condition.intervalSourceYear) : null
+        const selectedIntervalSourceMonth = condition ? Number(condition.intervalSourceMonth) : null
+        const selectSourceYears = this.$store.getters['weatherForecastStore/selectSourceYears']
+        const selectSourceMonths = this.$store.getters['weatherForecastStore/selectSourceMonths'](selectedIntervalSourceYear)
+
         return {
 
             //地域選択変数
-            selectedMeteorologicalObservatory: null,
-            selectedLargeAreaCode: null,
+            selectedMeteorologicalObservatory: selectedMeteorologicalObservatory,
+            selectedLargeAreaCode: selectedLargeAreaCode,
 
-            selectSourceYears: [],
-            selectSourceMonths: [],
+            selectSourceYears: selectSourceYears,
+            selectSourceMonths: selectSourceMonths,
 
-            selectedIntervalSourceYear: null,
-            selectedIntervalSourceMonth: null,
-
-            //予報取得期間
-            targetPeriod: null,
-            targetMenu: false,
-
-            // 表示しているか否か
-            isDisplay: false,
+            selectedIntervalSourceYear: selectedIntervalSourceYear,
+            selectedIntervalSourceMonth: selectedIntervalSourceMonth,
 
         }
     },
 
     computed: {
-        activateSubmit(): boolean {
-            return this.selectedLargeAreaCode && this.targetPeriod ? false : true;
-        },
-
-        selectedIntervalSourceDate(): Date | null {
-            if (this.selectedIntervalSourceYear == null || this.selectedIntervalSourceMonth == null) {
-                return null
-            }
-            return new Date(this.selectedIntervalSourceYear, this.selectedIntervalSourceMonth - 1, 1)
-        },
-
-        selectedIntervalTargetDate(): Date | null {
-            if (this.selectedIntervalSourceDate == null) {
-                return null
-            }
-            return convertToLastDayOfTheMonth(this.selectedIntervalSourceDate)
-        }
     },
 
     methods: {
@@ -137,51 +117,19 @@ export default Vue.extend({
 
         async changeLargeArea(): Promise<void> {
             await this.fetchStartDate()
-            await this.dicisionSourceYears()
+            this.selectSourceYears = await this.$store.getters['weatherForecastStore/selectSourceYears']
         },
 
         changeIntervalSourceYear(): void {
             this.initializeSelectedIntervalSourceMonth()
-            this.dicisionSourceMonths()
+            this.selectSourceMonths = this.$store.getters['weatherForecastStore/selectSourceMonths'](this.selectedIntervalSourceYear)
         },
 
         async fetchStartDate(): Promise<void> {
             const params = {
                 largeAreaCode: this.selectedLargeAreaCode,
             };
-
             await this.$store.dispatch('weatherForecastStore/fetchStartDate', params)
-        },
-
-        async dicisionSourceYears(): Promise<void> {
-            const todayYear = this.$store.getters['weatherForecastStore/today'].getFullYear()
-            let startDateYear = this.$store.getters['weatherForecastStore/startDate'].getFullYear()
-            this.selectSourceYears = new Array(todayYear - startDateYear + 1).fill(null).map((_, i) => i + startDateYear)
-        },
-
-        dicisionSourceMonths(): void {
-            const today = this.$store.getters['weatherForecastStore/today']
-            const todayYear = today.getFullYear()
-            // getMonthだけなぜか0~11の範囲をとる
-            const todayMonth = today.getMonth() + 1
-
-            let startDate = this.$store.getters['weatherForecastStore/startDate']
-            let startDateYear = startDate.getFullYear()
-            let startDateMonth = startDate.getMonth() + 1
-
-            let rangeStartMonth: number = 1
-            let rangeEndMonth: number = 12
-            if (this.selectedIntervalSourceYear == startDateYear) {
-                // 選択した年がstartDateと同じならば、startDateの月を最小値とする
-                rangeStartMonth = startDateMonth
-            }
-            if (this.selectedIntervalSourceYear == todayYear) {
-                // 選択した年が本日と同じならば、startDateの月を最小値とする
-                rangeEndMonth = todayMonth
-            }
-
-            this.selectSourceMonths = new Array(rangeEndMonth - rangeStartMonth + 1).fill(null).map((_, i) => i + rangeStartMonth)
-
         },
 
         async submit(): Promise<void> {
@@ -192,24 +140,32 @@ export default Vue.extend({
             if (this.selectedLargeAreaCode == null) {
                 return
             }
-            if (this.selectedIntervalSourceDate == null) {
+            if (this.selectedIntervalSourceYear == null) {
                 return
             }
-            if (this.selectedIntervalTargetDate == null) {
+            if (this.selectedIntervalSourceMonth == null) {
                 return
             }
 
-            //パラメータの設定
-            const params = {
+            // 条件のセット
+            // と同時に内部で予報情報を取得
+            const condition: WeatherForecastConditionInterface = {
+                meteorologicalObservatoryCode: this.selectedMeteorologicalObservatory.meteorologicalObservatoryCode,
                 largeAreaCode: this.selectedLargeAreaCode,
-                reportDateFrom: convertDateToString(this.selectedIntervalSourceDate),
-                reportDateTo: convertDateToString(this.selectedIntervalTargetDate),
-                forecastdays: "7",
-            };
+                intervalSourceYear: this.selectedIntervalSourceYear ? this.selectedIntervalSourceYear.toString() : '',
+                intervalSourceMonth: this.selectedIntervalSourceMonth ? this.selectedIntervalSourceMonth.toString() : '',
+            }
+            await this.$store.dispatch('weatherForecastStore/setCondition', condition)
 
-            await this.$store.dispatch('weatherForecastStore/fetchWeatherForecast', params)
-
-            this.isDisplay = true
+            // 条件をクエリパラメータに付与してルーティング
+            this.$router.push({
+                path: '/', query: {
+                    meteorologicalObservatoryCode: condition.meteorologicalObservatoryCode,
+                    largeAreaCode: condition.largeAreaCode,
+                    intervalSourceYear: condition.intervalSourceYear.toString(),
+                    intervalSourceMonth: condition.intervalSourceMonth.toString()
+                }
+            })
         },
 
     }
