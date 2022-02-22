@@ -40,7 +40,7 @@ form.condform(@submit.prevent="submit")
             input.submit-button.button.button-primary(type="submit" value="表示")
 
 
-    .isosceles-triangle(v-if="isDisplay")
+    .isosceles-triangle(v-if="$store.getters['weatherForecastStore/condition']")
     
 </template>
 
@@ -64,7 +64,6 @@ interface DataType {
     selectedIntervalSourceYear: number | null
     selectedIntervalSourceMonth: number | null
 
-    isDisplay: Boolean
 }
 
 export default Vue.extend({
@@ -95,9 +94,6 @@ export default Vue.extend({
 
             selectedIntervalSourceYear: selectedIntervalSourceYear,
             selectedIntervalSourceMonth: selectedIntervalSourceMonth,
-
-            // 表示しているか否か
-            isDisplay: false,
 
         }
     },
@@ -160,8 +156,6 @@ export default Vue.extend({
                 intervalSourceMonth: this.selectedIntervalSourceMonth ? this.selectedIntervalSourceMonth.toString() : '',
             }
             await this.$store.dispatch('weatherForecastStore/setCondition', condition)
-
-            this.isDisplay = true
 
             // 条件をクエリパラメータに付与してルーティング
             this.$router.push({
