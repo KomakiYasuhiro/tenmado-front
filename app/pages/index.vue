@@ -51,7 +51,7 @@ export default Vue.extend({
     }
   },
 
-  async fetch({ store }) {
+  async fetch({ store, query }) {
     await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
   },
 
