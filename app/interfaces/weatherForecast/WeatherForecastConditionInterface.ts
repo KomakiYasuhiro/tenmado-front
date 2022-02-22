@@ -1,6 +1,8 @@
+import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
+
 export interface WeatherForecastConditionInterface {
-    meteorologicalObservatory: string
+    meteorologicalObservatoryCode: string
     largeAreaCode: string
-    intervalSourceYear: number
-    intervalSourceMonth: number
+    intervalSourceYear: string
+    intervalSourceMonth: string
 }
