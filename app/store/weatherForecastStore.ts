@@ -5,19 +5,22 @@ import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast
 import { WeatherForecastQueryParamsInterface } from '~/interfaces/weatherForecast/WeatherForecastQueryParamsInterface'
 import { StartDateQueryParamsInterface } from '~/interfaces/weatherForecast/StartDateQueryParamsInterface'
 import { StartDateInterface } from '~/interfaces/weatherForecast/StartDateInterface'
+import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
 
 interface WeatherForecastStateInterface {
     weatherForecast: WeatherForecastInterface | null
     meteorologicalObservatories: Array<MeteorologicalObservatoryInterface> | null
     startDate: Date | null
     today: Date
+    condition: WeatherForecastConditionInterface | null
 }
 
 export const state = (): WeatherForecastStateInterface => ({
     weatherForecast: null,
     meteorologicalObservatories: null,
     startDate: null,
-    today: new Date()
+    today: new Date(),
+    condition: null
 })
 
 export type WeatherForecastState = ReturnType<typeof state>
@@ -26,7 +29,8 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
     weatherForecast: state => state.weatherForecast,
     meteorologicalObservatories: state => state.meteorologicalObservatories,
     startDate: state => state.startDate,
-    today: state => state.today
+    today: state => state.today,
+    condition: state => state.condition
 }
 
 export const mutations: MutationTree<WeatherForecastState> = {
@@ -38,6 +42,9 @@ export const mutations: MutationTree<WeatherForecastState> = {
     },
     setStartDate: (state: WeatherForecastState, startDate: Date) => {
         state.startDate = startDate
+    },
+    setCondtion: (state: WeatherForecastState, condition: WeatherForecastConditionInterface) => {
+        state.condition = condition
     },
 
 }
@@ -82,4 +89,12 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             console.log(`startDate取得失敗 ${e}`);
         }
     },
+
+    /**
+    * 検索条件をセット
+    * @param condition 条件
+    */
+    async setCondition({ commit }, condition: WeatherForecastConditionInterface) {
+        commit('setCondition', condition)
+    }
 }
