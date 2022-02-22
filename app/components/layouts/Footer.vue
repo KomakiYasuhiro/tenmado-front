@@ -2,7 +2,7 @@
 footer
     .footer
         .footer-message
-            p &copy; {{ new Date().getFullYear() }} sugimoto kaiji,komaki yasuhiro
+            p &copy; {{ new Date().getFullYear() }} KG , macas
 </template>
 
 

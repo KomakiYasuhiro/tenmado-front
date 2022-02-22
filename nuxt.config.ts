@@ -14,7 +14,7 @@ const config: NuxtConfig = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'テンマドは、過去に行った天気予報を気象台・地方月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにお使いいただけます。' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
