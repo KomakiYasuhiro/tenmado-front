@@ -1,7 +1,7 @@
 <template lang="pug">
 header
     h1.header
-        img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド")
+        img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド - 過去の天気予報検索サービス")
 </template>
 
 
