@@ -2,19 +2,15 @@
 footer
     .footer
         .footer-message
-            p &copy; {{ new Date().getFullYear() }} KG , macas
+            p &copy;2022  KG, macas
 </template>
 
 
 <script lang="ts">
 import Vue from 'vue'
-interface DataType {
-    fixed: boolean,
-}
 export default Vue.extend({
-    data(): DataType {
+    data() {
         return {
-            fixed: false,
         }
     }
 })
