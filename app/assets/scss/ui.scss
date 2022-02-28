@@ -66,6 +66,17 @@
         0 2px 4px -1px rgba(0, 0, 0, 0.4);
 }
 
+@mixin button-icon($imagepath) {
+    content: "";
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin: -3px 10px 0 -10px;
+    background: url($imagepath) no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+
 .button {
     font-size: 16px;
     font-weight: bold;
@@ -80,6 +91,7 @@
     &.button-primary {
         @include contained-button($color: #fff, $backgroundColor: #4e8fd3);
     }
+
     &.button-primary:hover,
     &.button-primary:focus {
         @include contained-button-hover-focus($backgroundColor: #427ab6)
@@ -93,8 +105,12 @@
         @include contained-button-hover-focus($backgroundColor: #b84442)
     }
 
-    &.contact {
-        width: 150px;
+    &.button-search-icon:before {
+        @include button-icon($imagepath: "~/assets/image/search-icon.svg")
+    }
+
+    &.button-contact-icon:before {
+        @include button-icon($imagepath: "~/assets/image/contact-icon.svg")
     }
 }
 
