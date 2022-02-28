@@ -37,7 +37,7 @@ form.condform(@submit.prevent="submit")
 
     .submit
         .submit-button-area
-            input.submit-button.button.button-primary(type="submit" value="表示")
+            button.submit-button.button.button-primary.button-search-icon(type="submit") 検索
 
 
     .isosceles-triangle(v-if="$store.getters['weatherForecastStore/condition']")

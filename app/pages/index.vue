@@ -1,6 +1,7 @@
 <template lang="pug">
 article
   Heading(:value="headingValue")
+  Description(:descriptionText="descriptionText")
   .content
     .condition
       WeatherForecastCondition
@@ -9,7 +10,7 @@ article
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
   hr.line
-  Contact(:contacts="contacts")
+  Contact(:contactText="contactText")
   Source(:sources="sources")
 </template>
 
@@ -20,18 +21,21 @@ import WeatherForecastCondition from '~/components/pages/weatherForecast/Weather
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
 import Contact from '~/components/pages/common/Contact.vue'
+import Description from '~/components/pages/common/Description.vue'
 import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
 
 interface DataType {
   headingValue: string
+  descriptionText: string
   sources: Array<string>
-  contacts: Array<string>
+  contactText: string
 }
 
 export default Vue.extend({
 
   components: {
     Heading,
+    Description,
     WeatherForecastCondition,
     WeatherForecastCard,
     Source,
@@ -43,12 +47,11 @@ export default Vue.extend({
   data(): DataType {
     return {
       headingValue: "過去の天気予報を検索",
+      descriptionText: "テンマドは過去に行った天気予報を気象台・地方・月次を条件に検索できるサービスです。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
       ],
-      contacts: [
-        "本サービスについてのお問い合わせや<br>上記の過去天気予報情報のデータ提供について等<br>お気軽にご連絡ください。<br>"
-      ]
+      contactText: "本サービスについてのお問い合わせや<br>過去の天気予報のデータ提供について等<br>お気軽にご連絡ください。<br>"
     }
   },
 

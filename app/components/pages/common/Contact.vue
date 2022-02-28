@@ -1,31 +1,40 @@
 <template lang="pug">
-.contacts
-    .contact(v-for="contact in contacts")
-        p(v-html="contact")
-    .submit
-        .submit-button-area
-            a(href="https://forms.gle/qz5mFykke7BLqoDK8")
-                input.submit-button.button.button-primary.contact(type="submit" value="連絡する")
+.contact
+    .contact-text(v-html="contactText")
+    .contact-button-area
+        button.contact-button.button.button-primary.button-contact-icon(onclick="location.href='https://forms.gle/qz5mFykke7BLqoDK8'") 連絡する
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
+import Vue from 'vue'
 
 export default Vue.extend({
     props: {
-        contacts: { type: Array as PropType<Array<String>>, required: true },
+        contactText: { type: String, required: true },
     }
 })
 
 </script>
 
 <style lang="scss" scoped>
-.contacts {
-    // margin-top: auto;
+.contact {
     color: #333333;
     font-size: 12px;
     text-align: center;
     display: flow-root;
     justify-content: center;
+}
+
+.contact-text {
+    margin: 10px 0px;
+}
+
+.contact-button-area {
+    margin: 20px;
+
+    .contact-button {
+        width: 200px;
+        color: #ffffff;
+    }
 }
 </style>
