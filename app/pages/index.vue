@@ -10,7 +10,7 @@ article
         template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
           WeatherForecastCard(:report="report")
   hr.line
-  Contact(:contacts="contacts")
+  Contact(:contactText="contactText")
   Source(:sources="sources")
 </template>
 
@@ -28,7 +28,7 @@ interface DataType {
   headingValue: string
   descriptionText: string
   sources: Array<string>
-  contacts: Array<string>
+  contactText: string
 }
 
 export default Vue.extend({
@@ -51,9 +51,7 @@ export default Vue.extend({
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
       ],
-      contacts: [
-        "本サービスについてのお問い合わせや<br>過去の天気予報のデータ提供について等<br>お気軽にご連絡ください。<br>"
-      ]
+      contactText: "本サービスについてのお問い合わせや<br>過去の天気予報のデータ提供について等<br>お気軽にご連絡ください。<br>"
     }
   },
 

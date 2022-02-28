@@ -69,8 +69,8 @@
 @mixin button-icon($imagepath) {
     content: "";
     display: inline-block;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     margin: -3px 10px 0 -10px;
     background: url($imagepath) no-repeat;
     background-size: contain;
@@ -87,10 +87,6 @@
     margin: 4px;
     border-radius: 4px;
     border: none;
-
-    &.button-search-icon:before {
-        @include button-icon($imagepath: "~/assets/image/search-icon.svg")
-    }
 
     &.button-primary {
         @include contained-button($color: #fff, $backgroundColor: #4e8fd3);
@@ -109,8 +105,12 @@
         @include contained-button-hover-focus($backgroundColor: #b84442)
     }
 
-    &.contact {
-        width: 150px;
+    &.button-search-icon:before {
+        @include button-icon($imagepath: "~/assets/image/search-icon.svg")
+    }
+
+    &.button-contact-icon:before {
+        @include button-icon($imagepath: "~/assets/image/contact-icon.svg")
     }
 }
 
