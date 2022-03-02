@@ -63,7 +63,7 @@ export default Vue.extend({
 
         { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
         { hid: 'og:type', property: 'og:type', content: 'website' },
-        { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app' },
+        { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app/weatherforecast' },
         { hid: 'og:title', property: 'og:title', content: '過去の天気予報検索サービス - テンマド' },
         { hid: 'og:description', property: 'og:description', content: '過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
       ],
