@@ -18,7 +18,7 @@ const config: NuxtConfig = {
 
       { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
       { hid: 'og:type', property: 'og:type', content: 'website' },
-      { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app' },
+      { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app/' },
       { hid: 'og:title', property: 'og:title', content: 'テンマド' },
       { hid: 'og:description', property: 'og:description', content: 'テンマドは、...' },
       { hid: 'og:image', property: 'og:image', content: 'https://tenmado.app/image/tenmado-icon.svg' },
@@ -30,7 +30,8 @@ const config: NuxtConfig = {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' }
+      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' },
+      { hid: 'canonical', rel: 'canonical', href: 'https:/tenmado.app/' }
     ]
   },
 
