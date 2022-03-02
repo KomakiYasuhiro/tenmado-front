@@ -6,19 +6,32 @@ const config: NuxtConfig = {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - 過去の天気予報検索サービス',
-    title: 'テンマド',
+    titleTemplate: '%s - テンマド',
     htmlAttrs: {
       lang: 'jp'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'テンマドは、過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+      { hid: 'description', name: 'description', content: 'テンマドは、...' },
+      { hid: 'keywords', name: 'keywords', content: 'ビッグデータ,データ分析,データサイエンス,統計,機械学習' },
+
+      { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
+      { hid: 'og:type', property: 'og:type', content: 'website' },
+      { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app/' },
+      { hid: 'og:title', property: 'og:title', content: 'テンマド' },
+      { hid: 'og:description', property: 'og:description', content: 'テンマドは、...' },
+      { hid: 'og:image', property: 'og:image', content: 'https://tenmado.app/image/tenmado-icon.svg' },
+
+      { hid: 'twitter:card', name: 'twitter:card', content: 'summary' },
+      { hid: 'twitter:site', name: 'twitter:site', content: '@tenmado_app' },
+      { hid: 'twitter:creator', name: 'twitter:creator', content: '@tenmado_app' },
+
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' }
+      { rel: 'icon', type: 'image/svg+xml', href: '/image/tenmado-icon.svg' },
+      { hid: 'canonical', rel: 'canonical', href: 'https:/tenmado.app/' }
     ]
   },
 
