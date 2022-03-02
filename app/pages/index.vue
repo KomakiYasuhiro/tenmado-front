@@ -43,15 +43,30 @@ export default Vue.extend({
   },
 
 
-
   data(): DataType {
     return {
       headingValue: "過去の天気予報を検索",
-      descriptionText: "テンマドは過去に行った天気予報を気象台・地方・月次を条件に検索できるサービスです。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+      descriptionText: "過去に行った天気予報を気象台・地方・月次を条件に検索できるサービスです。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
       ],
       contactText: "本サービスについてのお問い合わせや<br>過去の天気予報のデータ提供について等<br>お気軽にご連絡ください。<br>"
+    }
+  },
+
+  head() {
+    return {
+      title: '過去の天気予報検索サービス',
+      meta: [
+        { hid: 'description', name: 'description', content: '過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+        { hid: 'keywords', name: 'keywords', content: '過去天気予報,天気予報,過去データ,ビッグデータ,データ分析,データサイエンス,統計,機械学習' },
+
+        { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
+        { hid: 'og:type', property: 'og:type', content: 'website' },
+        { hid: 'og:url', property: 'og:url', content: 'https://tenmado.app' },
+        { hid: 'og:title', property: 'og:title', content: '過去の天気予報検索サービス - テンマド' },
+        { hid: 'og:description', property: 'og:description', content: '過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+      ],
     }
   },
 
