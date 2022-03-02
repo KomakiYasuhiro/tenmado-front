@@ -6,8 +6,7 @@ const config: NuxtConfig = {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - 過去の天気予報検索サービス',
-    title: 'テンマド',
+    title: '過去の天気予報検索サービス - テンマド',
     htmlAttrs: {
       lang: 'jp'
     },
