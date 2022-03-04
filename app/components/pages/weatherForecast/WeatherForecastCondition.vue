@@ -159,7 +159,7 @@ export default Vue.extend({
 
             // 条件をクエリパラメータに付与してルーティング
             this.$router.push({
-                path: '/', query: {
+                path: '/weatherforecast', query: {
                     meteorologicalObservatoryCode: condition.meteorologicalObservatoryCode,
                     largeAreaCode: condition.largeAreaCode,
                     intervalSourceYear: condition.intervalSourceYear.toString(),
