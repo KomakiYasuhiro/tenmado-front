@@ -1,6 +1,6 @@
 <template lang="pug">
-h2.heading
-    .heading-value {{ value }}
+h1.heading
+    .heading-texxt {{ headingText }}
 </template>
 
 <script lang="ts">
@@ -8,7 +8,7 @@ import Vue from 'vue'
 
 export default Vue.extend({
     props: {
-        value: { type: String, required: true },
+        headingText: { type: String, required: true },
     }
 })
 
@@ -20,14 +20,14 @@ export default Vue.extend({
     color: #fff;
     width: 300px;
     height: 40px;
-    padding-left: 20px;
+    padding-left: 40px;
     display: flex;
     align-items: center;
     margin-block-start: 0em;
     margin-block-end: 0em;
 }
 
-.heading-value {
+.heading-text {
     font-size: 18px;
 }
 </style>

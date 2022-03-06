@@ -1,7 +1,7 @@
 <template lang="pug">
 header
-    h1.header
-        img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド - 過去の天気予報検索サービス")
+    .header
+        img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド")
 </template>
 
 
@@ -24,7 +24,7 @@ export default Vue.extend({
     margin-block-end: 0em;
 }
 .header-logo {
-    margin-left: 20px;
+    margin-left: 40px;
     height: 80px;
 }
 </style>
