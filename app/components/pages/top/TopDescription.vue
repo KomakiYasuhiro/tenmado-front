@@ -40,6 +40,7 @@ export default Vue.extend({
 
     .description-image {
         width: 500px;
+        height: 375px;
         padding: 20px;
     }
 }
