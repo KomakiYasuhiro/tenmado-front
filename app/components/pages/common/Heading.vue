@@ -1,6 +1,5 @@
 <template lang="pug">
-h1.heading
-    .heading-texxt {{ headingText }}
+h1.heading {{ headingText }}
 </template>
 
 <script lang="ts">
@@ -25,9 +24,7 @@ export default Vue.extend({
     align-items: center;
     margin-block-start: 0em;
     margin-block-end: 0em;
-}
-
-.heading-text {
     font-size: 18px;
+    font-weight: bold;
 }
 </style>
