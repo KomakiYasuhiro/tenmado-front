@@ -1,7 +1,8 @@
 <template lang="pug">
 header
     .header
-        img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド")
+        nuxt-link(to="/")
+            img.header-logo(src="~/assets/image/tenmado-logo.svg" alt="テンマド")
 </template>
 
 
@@ -18,6 +19,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .header {
     height: 80px;
+    width: 100%;
     padding-top: 16px;
     border-bottom: 3px solid #4e8fd3;
     margin-block-start: 0em;
@@ -26,5 +28,6 @@ export default Vue.extend({
 .header-logo {
     margin-left: 40px;
     height: 80px;
+    width: 242.8px;
 }
 </style>
