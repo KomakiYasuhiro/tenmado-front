@@ -26,4 +26,7 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
+.contact {
+    margin-bottom: 20px;
+}
 </style>
