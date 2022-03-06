@@ -1,6 +1,6 @@
 <template lang="pug">
 article
-  Heading(:headingText="headingText")
+  Heading(:headingText="headingText", :layerName="layerName")
   Description(:descriptionText="descriptionText")
   .content
     .condition
@@ -26,6 +26,7 @@ import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/
 
 interface DataType {
   headingText: string
+  layerName: string
   descriptionText: string
   sources: Array<string>
   contactText: string
@@ -46,6 +47,7 @@ export default Vue.extend({
   data(): DataType {
     return {
       headingText: "過去の天気予報を検索",
+      layerName: "過去の天気予報検索サービス",
       descriptionText: "過去に行った天気予報を気象台・地方・月次を条件に検索できるサービスです。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
