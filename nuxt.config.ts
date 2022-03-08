@@ -8,7 +8,7 @@ const config: NuxtConfig = {
   head: {
     titleTemplate: '%s - テンマド',
     htmlAttrs: {
-      lang: 'jp'
+      lang: 'ja'
     },
     meta: [
       { charset: 'utf-8' },

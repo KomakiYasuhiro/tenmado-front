@@ -1,7 +1,7 @@
 <template lang="pug">
 .app
   Header
-  main
+  main.content
     Nuxt
   Footer
 
@@ -31,7 +31,7 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-left: 50px;
-  padding-right: 50px;
+  margin: 0 calc(50% - 50vw);
 }
+
 </style>
