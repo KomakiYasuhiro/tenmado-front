@@ -17,7 +17,7 @@
                 label.accordion-label(:for="'accordion-check' + index_i + '-' + index_j") {{ meteorologicalObservatory.meteorologicalObservatoryName != "気象庁" ? meteorologicalObservatory.meteorologicalObservatoryName : "東京気象庁" }}
                 .accordion-content
                     .to_area_links(v-for="(largeArea) in meteorologicalObservatory.largeAreas")
-                      nuxt-link.to_area_link(:to="'/weatherforecast/' + largeArea.largeAreaCode") {{ largeArea.largeAreaName }}
+                      nuxt-link.to_area_link(:to="$route.path + largeArea.largeAreaCode + '/'") {{ largeArea.largeAreaName }}
     hr.line
     Contact(:contactText="contactText")
     Source(:sources="sources")
@@ -27,12 +27,11 @@
 import Vue from 'vue'
 import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
 import Heading from '~/components/pages/common/Heading.vue'
-import WeatherForecastCondition from '~/components/pages/weatherForecast/WeatherForecastCondition.vue'
-import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
 import Contact from '~/components/pages/common/Contact.vue'
 import Description from '~/components/pages/common/Description.vue'
 import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
+import { Head } from '~/interfaces/common/Head'
 
 interface DataType {
   breadcrumbsLayers: Array<BreadcrumbsLayerInterface>
@@ -44,9 +43,8 @@ interface DataType {
 
 // 
 // やること
-// - 不要なコードの削除
-// - asyncData
 // - メタ情報
+// - お問い合わせ
 // - コードの共通化
 
 export default Vue.extend({
@@ -55,8 +53,6 @@ export default Vue.extend({
     Breadcrumbs,
     Heading,
     Description,
-    WeatherForecastCondition,
-    WeatherForecastCard,
     Source,
     Contact,
   },
@@ -66,12 +62,12 @@ export default Vue.extend({
     return {
       breadcrumbsLayers: [
         {
-          path: "/weatherforecast",
+          path: "/weatherforecast/",
           name: "過去天気予報データベース"
         }
       ],
       headingText: "過去天気予報データベース",
-      descriptionText: "過去に行った天気予報を蓄積しているデータベースです。気象台・地方・月次を条件に検索可能です。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+      descriptionText: "過去に行われた天気予報を蓄積しているデータベースです。気象台・地方・月次を条件に検索可能です。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
       ],
@@ -79,21 +75,21 @@ export default Vue.extend({
     }
   },
 
-  head() {
+  head(): Head {
     return {
-      title: '過去の天気予報検索サービス',
+      title: '過去天気予報データベース',
       meta: [
-        { hid: 'description', name: 'description', content: '過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+        { hid: 'description', name: 'description', content: '過去に行われた天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
         { hid: 'keywords', name: 'keywords', content: '過去天気予報,天気予報,過去データ,ビッグデータ,データ分析,データサイエンス,統計,機械学習' },
 
         { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
         { hid: 'og:type', property: 'og:type', content: 'website' },
-        { hid: 'og:url', property: 'og:url', content: 'https:/tenmado.app' + this.$route.path + '/' },
-        { hid: 'og:title', property: 'og:title', content: '過去の天気予報検索サービス - テンマド' },
-        { hid: 'og:description', property: 'og:description', content: '過去に行った天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+        { hid: 'og:url', property: 'og:url', content: 'https:/tenmado.app' + (this.$route.path.substr(-1) == '/' ? this.$route.path : this.$route.path + '/')  },
+        { hid: 'og:title', property: 'og:title', content: '過去天気予報データベース - テンマド' },
+        { hid: 'og:description', property: 'og:description', content: '過去に行われた天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
       ],
       link: [
-        { hid: 'canonical', rel: 'canonical', href: 'https:/tenmado.app' + this.$route.path + '/' }
+        { hid: 'canonical', rel: 'canonical', href: 'https:/tenmado.app' + (this.$route.path.substr(-1) == '/' ? this.$route.path : this.$route.path + '/')  }
       ]
     }
   },

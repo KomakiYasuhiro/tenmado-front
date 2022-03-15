@@ -5,12 +5,12 @@
         :headingText="headingText")
     article
         .content
-            h2.content-title 気象台・地方を選択
+            h2.content-title 対象年月を選択
             .yearmonth-list
                 nuxt-link.link(
                     v-for="(yearmonth, index) in $store.getters['weatherForecastStore/displayYearMonthList']"
                     :key="index"
-                    :to="'/weatherforecast/' + $route.params.areacode + '/' + String(yearmonth.getFullYear()) + ( '00' + String(yearmonth.getMonth() + 1) ).slice( -2 )"
+                    :to="$route.path + String(yearmonth.getFullYear()) + ( '00' + String(yearmonth.getMonth() + 1) ).slice( -2 ) + '/'"
                 )
                     | {{ yearmonth.getFullYear() }}年 {{ ( '00' + String(yearmonth.getMonth() + 1) ).slice( -2 ) }} 月
 </template>
@@ -18,32 +18,60 @@
 <script lang="ts">
 
 import Vue from 'vue'
+import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
+import Heading from '~/components/pages/common/Heading.vue'
 import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
+import { Head } from '~/interfaces/common/Head'
 
 interface DataType {
     breadcrumbsLayers: Array<BreadcrumbsLayerInterface>
+    meteorologicalObservatoryNameLargeAreaName: string
     headingText: string
 }
 
 export default Vue.extend({
 
+    components: {
+        Breadcrumbs,
+        Heading
+    },
+
     data(): DataType {
-        console.log(this.$route.params.areacode)
+        const meteorologicalObservatoryName: string = this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).meteorologicalObservatoryName
+        const largeAreaName: string = this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).largeAreaName
+        const meteorologicalObservatoryNameLargeAreaName: string = meteorologicalObservatoryName +  ' - ' + largeAreaName
         return {
             breadcrumbsLayers: [
                 {
-                    path: "/weatherforecast",
+                    path: "/weatherforecast/",
                     name: "過去天気予報データベース"
                 },
                 {
                     path: "",
-                    name: this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).meteorologicalObservatoryName
-                        + ' - '  +this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).largeAreaName
+                    name: meteorologicalObservatoryNameLargeAreaName
                 }
             ],
-            headingText: this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).meteorologicalObservatoryName
-                + ' - '  +this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).largeAreaName
-                + ' ' +  "の過去天気予報",
+            meteorologicalObservatoryNameLargeAreaName: meteorologicalObservatoryNameLargeAreaName,
+            headingText: meteorologicalObservatoryNameLargeAreaName + ' ' +  "の過去天気予報",
+        }
+    },
+
+    head(): Head {
+        return {
+            title: this.headingText,
+            meta: [
+                { hid: 'description', name: 'description', content: '過去に行われた' + this.meteorologicalObservatoryNameLargeAreaName + 'の天気予報を月次を条件に検索できます。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+                { hid: 'keywords', name: 'keywords', content: '過去天気予報,天気予報,過去データ,ビッグデータ,データ分析,データサイエンス,統計,機械学習' },
+
+                { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
+                { hid: 'og:type', property: 'og:type', content: 'website' },
+                { hid: 'og:url', property: 'og:url', content: 'https:/tenmado.app' + (this.$route.path.substr(-1) == '/' ? this.$route.path : this.$route.path + '/')  },
+                { hid: 'og:title', property: 'og:title', content: this.meteorologicalObservatoryNameLargeAreaName + 'の過去天気予報データベース - テンマド' },
+                { hid: 'og:description', property: 'og:description', content: '過去に行われた' + this.meteorologicalObservatoryNameLargeAreaName + 'の天気予報を月次を条件に検索できます。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+            ],
+            link: [
+                { hid: 'canonical', rel: 'canonical', href: 'https:/tenmado.app' + (this.$route.path.substr(-1) == '/' ? this.$route.path : this.$route.path + '/')  }
+            ]
         }
     },
 
@@ -52,6 +80,10 @@ export default Vue.extend({
             largeAreaCode: params.areacode,
         };
         await store.dispatch('weatherForecastStore/fetchStartDate', requestparams)
+        console.log(store.getters['weatherForecastStore/flattenKubuns'])
+        if (store.getters['weatherForecastStore/flattenKubuns'] == null) {
+            await store.dispatch('weatherForecastStore/fetchKubuns')
+        }
     },
 
 })
