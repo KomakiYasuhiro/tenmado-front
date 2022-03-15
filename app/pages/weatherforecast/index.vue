@@ -1,40 +1,58 @@
 <template lang="pug">
-article
-  Heading(:headingText="headingText", :layerName="layerName")
-  Description(:descriptionText="descriptionText")
-  .content
-    .condition
-      WeatherForecastCondition
-    template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
-      .cards
-        template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
-          WeatherForecastCard(:report="report")
-  hr.line
-  Contact(:contactText="contactText")
-  Source(:sources="sources")
+.page
+  Breadcrumbs(:layers="breadcrumbsLayers")
+  article
+    Heading(:headingText="headingText")
+    Description(:descriptionText="descriptionText")
+    .content
+      h2.content-title 気象台・地方を選択
+      .kubun-list
+        template(v-for="(kubun, index_i) in $store.getters['weatherForecastStore/kubuns']")
+          input.accordion-check(:id="'accordion-check' + index_i" type="checkbox")
+          label.accordion-label(:for="'accordion-check' + index_i") {{ kubun.kubunName }}
+          .accordion-content
+            .meteorologicalobservatory-list
+              template(v-for="(meteorologicalObservatory, index_j) in kubun.meteorologicalObservatories")
+                input.accordion-check(:id="'accordion-check' + index_i + '-' + index_j" type="checkbox")
+                label.accordion-label(:for="'accordion-check' + index_i + '-' + index_j") {{ meteorologicalObservatory.meteorologicalObservatoryName != "気象庁" ? meteorologicalObservatory.meteorologicalObservatoryName : "東京気象庁" }}
+                .accordion-content
+                    .to_area_links(v-for="(largeArea) in meteorologicalObservatory.largeAreas")
+                      nuxt-link.to_area_link(:to="'/weatherforecast/' + largeArea.largeAreaCode") {{ largeArea.largeAreaName }}
+    hr.line
+    Contact(:contactText="contactText")
+    Source(:sources="sources")
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
 import Heading from '~/components/pages/common/Heading.vue'
 import WeatherForecastCondition from '~/components/pages/weatherForecast/WeatherForecastCondition.vue'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Source from '~/components/pages/common/Source.vue'
 import Contact from '~/components/pages/common/Contact.vue'
 import Description from '~/components/pages/common/Description.vue'
-import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
+import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
 
 interface DataType {
+  breadcrumbsLayers: Array<BreadcrumbsLayerInterface>
   headingText: string
-  layerName: string
   descriptionText: string
   sources: Array<string>
   contactText: string
 }
 
+// 
+// やること
+// - 不要なコードの削除
+// - asyncData
+// - メタ情報
+// - コードの共通化
+
 export default Vue.extend({
 
   components: {
+    Breadcrumbs,
     Heading,
     Description,
     WeatherForecastCondition,
@@ -46,9 +64,14 @@ export default Vue.extend({
 
   data(): DataType {
     return {
-      headingText: "過去の天気予報を検索",
-      layerName: "過去の天気予報検索サービス",
-      descriptionText: "過去に行った天気予報を気象台・地方・月次を条件に検索できるサービスです。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+      breadcrumbsLayers: [
+        {
+          path: "/weatherforecast",
+          name: "過去天気予報データベース"
+        }
+      ],
+      headingText: "過去天気予報データベース",
+      descriptionText: "過去に行った天気予報を蓄積しているデータベースです。気象台・地方・月次を条件に検索可能です。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
       sources: [
         "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
       ],
@@ -75,36 +98,8 @@ export default Vue.extend({
     }
   },
 
-  async fetch({ store, query }) {
-    await store.dispatch('weatherForecastStore/fetchMeteorologicalObservatories');
-
-    // クエリパラメータがない場合は初期画面
-    if (query == null) {
-      return
-    }
-
-    // クエリパラメータがある場合はまずはクエリパラメータの内容をチェック
-    // 全部passしたらクエリパラメータの内容を基に描画
-    if (
-      (query.meteorologicalObservatoryCode == null) || (query.largeAreaCode == null) || (query.intervalSourceYear == null) || (query.intervalSourceMonth == null)
-    ) {
-      return
-    }
-
-    const condition: WeatherForecastConditionInterface = {
-      meteorologicalObservatoryCode: query.meteorologicalObservatoryCode as string,
-      largeAreaCode: query.largeAreaCode as string,
-      intervalSourceYear: query.intervalSourceYear as string,
-      intervalSourceMonth: query.intervalSourceMonth as string,
-    }
-
-    await store.dispatch('weatherForecastStore/setCondition', condition)
-
-    const params = {
-      largeAreaCode: condition.largeAreaCode,
-    }
-    await store.dispatch('weatherForecastStore/fetchStartDate', params)
-
+  async fetch({ store }) {
+    await store.dispatch('weatherForecastStore/fetchKubuns')
   },
 
 
@@ -112,26 +107,93 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-article {
+.page {
   display: flex;
   flex-direction: column;
   min-height: 85vh;
+
+  article {
+    display: flex;
+    flex-direction: column;
+
+    .content {
+      width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+
+
+      .content-title {
+        color: #555;
+        font-size: 18px;
+        font-weight: normal;
+        margin-bottom: 5px;
+      }
+
+      // ここからアコーディオンのデザイン
+
+      // チェックボックスのonoffで表現しているので、チェックボックスの描画を外す
+      .accordion-check {
+        display: none;
+      }
+
+      // 閉表示のデザイン
+      .accordion-label {
+        background: #eee;
+        color: #555;
+        display: block;
+        margin-bottom: 1px;
+        padding: 10px;
+        position: relative;
+      }
+
+      // 閉表示の尾のデザイン
+      .accordion-label:after {
+        position: absolute;
+        top: 50%;
+        right: 2%;
+        width: 0;
+        height: 0;
+        padding: 0;
+        content: "";
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #666666;
+        transform: translateY(-50%);
+      }
+
+      // 閉じているときの中身のデザイン
+      .accordion-content {
+        border: 1px solid #eee;
+        height: 0;
+        opacity: 0;
+        padding: 0 10px;
+        visibility: hidden;
+      }
+
+      // 開かれた時の尾のデザイン(回転)
+      .accordion-check:checked + .accordion-label:after{
+        transform: translateY(-50%) rotate(180deg);
+      }
+
+      // 開かれた時の中身のデザイン
+      .accordion-check:checked + .accordion-label + .accordion-content {
+        height: 100%;
+        opacity: 1;
+        margin-top: -1px;
+        padding: 10px 10px 10px 30px;
+        visibility: visible;
+      }
+
+      .to_area_link {
+        color: #4e8fd3
+      }
+    }
+  }
+
 }
-.content {
-  width: 100%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.condition {
-  margin-top: 50px;
-  margin-bottom: 30px;
-}
-.cards {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
+
+
+
+
 </style>

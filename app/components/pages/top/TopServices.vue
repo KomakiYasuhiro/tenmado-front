@@ -16,13 +16,6 @@ export default Vue.extend({
     components: {
         Headline
     },
-
-    props: {
-        contactText: {
-            type: String,
-            required: true,
-        },
-    },
 })
 </script>
 
