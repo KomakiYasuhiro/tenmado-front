@@ -96,6 +96,15 @@
     &.button-primary:focus {
         @include contained-button-hover-focus($backgroundColor: #427ab6)
     }
+
+    &.button-primary-reverse {
+        @include contained-button($color: #4e8fd3, $backgroundColor: #fff);
+    }
+
+    &.button-primary-reverse:hover,
+    &.button-primary-reverse:focus {
+        @include contained-button-hover-focus($backgroundColor: #fff)
+    }
     
     &.button-accent {
         @include contained-button($color: #fff, $backgroundColor: #d3504e);
@@ -111,6 +120,10 @@
 
     &.button-contact-icon:before {
         @include button-icon($imagepath: "~/assets/image/contact-icon.svg")
+    }
+
+    &.button-contact-icon-reverse:before {
+        @include button-icon($imagepath: "~/assets/image/contact-icon-reverse.svg")
     }
 }
 

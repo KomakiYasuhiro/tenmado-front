@@ -1,7 +1,6 @@
 <template lang="pug">
 .contact
     .contact-text(v-html="contactText")
-    p {{ contactUrl }}
     .contact-button-area
         button.contact-button.button.button-primary.button-contact-icon(:onclick="`location.href='${contactUrl}'`") 連絡する
 </template>
@@ -10,9 +9,13 @@
 import Vue from 'vue'
 import constants from '~/constants/constants'
 
+interface DataType {
+    contactUrl: string
+}
+
 export default Vue.extend({
 
-    data() {
+    data(): DataType {
         return {
             contactUrl: constants.contactUrl
         }
