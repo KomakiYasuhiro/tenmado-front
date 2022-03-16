@@ -127,3 +127,70 @@ hr.line {
     margin-left: auto;
     padding: 0;
 }
+
+// アコーディオンメニュー
+// 使い方(Pug表記)
+// ---------------------------------------------------------------------
+// input.accordion-check(id="accordion-check_1" type="checkbox")
+// label.accordion-label(for="accordion-check_1") 表示ラベル
+// .accordion-content
+//   内容1
+// input.accordion-check(id="accordion-check_2" type="checkbox")
+// label.accordion-label(for="accordion-check_2") 表示ラベル
+// .accordion-content
+//   内容2
+// ---------------------------------------------------------------------
+
+
+// チェックボックスのonoffで表現しているので、チェックボックスの描画を外す
+.accordion-check {
+    display: none;
+}
+
+// 閉表示のデザイン
+.accordion-label {
+    background: #eee;
+    color: #555;
+    display: block;
+    margin-bottom: 1px;
+    padding: 10px;
+    position: relative;
+}
+
+// 閉表示の尾のデザイン
+.accordion-label:after {
+    position: absolute;
+    top: 50%;
+    right: 2%;
+    width: 0;
+    height: 0;
+    padding: 0;
+    content: "";
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #666666;
+    transform: translateY(-50%);
+}
+
+// 閉じているときの中身のデザイン
+.accordion-content {
+    border: 1px solid #eee;
+    height: 0;
+    opacity: 0;
+    padding: 0 10px;
+    visibility: hidden;
+}
+
+// 開かれた時の尾のデザイン(回転)
+.accordion-check:checked + .accordion-label:after{
+    transform: translateY(-50%) rotate(180deg);
+}
+
+// 開かれた時の中身のデザイン
+.accordion-check:checked + .accordion-label + .accordion-content {
+    height: 100%;
+    opacity: 1;
+    margin-top: -1px;
+    padding: 10px 10px 10px 30px;
+    visibility: visible;
+}

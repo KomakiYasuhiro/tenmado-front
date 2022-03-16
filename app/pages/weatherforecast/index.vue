@@ -41,12 +41,6 @@ interface DataType {
   contactText: string
 }
 
-// 
-// やること
-// - メタ情報
-// - お問い合わせ
-// - コードの共通化
-
 export default Vue.extend({
 
   components: {
@@ -118,67 +112,11 @@ export default Vue.extend({
       display: flex;
       flex-direction: column;
 
-
       .content-title {
         color: #555;
         font-size: 18px;
         font-weight: normal;
         margin-bottom: 5px;
-      }
-
-      // ここからアコーディオンのデザイン
-
-      // チェックボックスのonoffで表現しているので、チェックボックスの描画を外す
-      .accordion-check {
-        display: none;
-      }
-
-      // 閉表示のデザイン
-      .accordion-label {
-        background: #eee;
-        color: #555;
-        display: block;
-        margin-bottom: 1px;
-        padding: 10px;
-        position: relative;
-      }
-
-      // 閉表示の尾のデザイン
-      .accordion-label:after {
-        position: absolute;
-        top: 50%;
-        right: 2%;
-        width: 0;
-        height: 0;
-        padding: 0;
-        content: "";
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid #666666;
-        transform: translateY(-50%);
-      }
-
-      // 閉じているときの中身のデザイン
-      .accordion-content {
-        border: 1px solid #eee;
-        height: 0;
-        opacity: 0;
-        padding: 0 10px;
-        visibility: hidden;
-      }
-
-      // 開かれた時の尾のデザイン(回転)
-      .accordion-check:checked + .accordion-label:after{
-        transform: translateY(-50%) rotate(180deg);
-      }
-
-      // 開かれた時の中身のデザイン
-      .accordion-check:checked + .accordion-label + .accordion-content {
-        height: 100%;
-        opacity: 1;
-        margin-top: -1px;
-        padding: 10px 10px 10px 30px;
-        visibility: visible;
       }
 
       .to_area_link {
