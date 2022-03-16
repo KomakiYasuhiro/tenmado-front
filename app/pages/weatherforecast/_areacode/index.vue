@@ -83,7 +83,6 @@ export default Vue.extend({
             largeAreaCode: params.areacode,
         };
         await store.dispatch('weatherForecastStore/fetchStartDate', requestparams)
-        console.log(store.getters['weatherForecastStore/flattenKubuns'])
         if (store.getters['weatherForecastStore/flattenKubuns'] == null) {
             await store.dispatch('weatherForecastStore/fetchKubuns')
         }

@@ -79,7 +79,9 @@ export default Vue.extend({
   },
 
   async fetch({ store }) {
-    await store.dispatch('weatherForecastStore/fetchKubuns')
+    if (store.getters['weatherForecastStore/kubuns'] == null) {
+      await store.dispatch('weatherForecastStore/fetchKubuns')
+    }
   },
 
 
