@@ -9,17 +9,18 @@
                 .cards
                     template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
                         WeatherForecastCard(:report="report")
+        WeatherForecastContentFooterVue
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-
+import { Head } from '~/interfaces/common/Head'
 import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
 import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
 import WeatherForecastCard from '~/components/pages/weatherForecast/WeatherForecastCard.vue'
 import Heading from '~/components/pages/common/Heading.vue'
 import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
-import { Head } from '~/interfaces/common/Head'
+import WeatherForecastContentFooterVue from '~/components/pages/weatherForecast/WeatherForecastContentFooter.vue'
 
 interface DataType {
     breadcrumbsLayers: Array<BreadcrumbsLayerInterface>
@@ -34,6 +35,7 @@ export default Vue.extend({
         Breadcrumbs,
         Heading,
         WeatherForecastCard,
+        WeatherForecastContentFooterVue
     },
 
     data(): DataType {

@@ -13,6 +13,7 @@
                     :to="$route.path + String(yearmonth.getFullYear()) + ( '00' + String(yearmonth.getMonth() + 1) ).slice( -2 ) + '/'"
                 )
                     | {{ yearmonth.getFullYear() }}年 {{ ( '00' + String(yearmonth.getMonth() + 1) ).slice( -2 ) }} 月
+        WeatherForecastContentFooterVue
 </template>
 
 <script lang="ts">
@@ -20,6 +21,7 @@
 import Vue from 'vue'
 import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
 import Heading from '~/components/pages/common/Heading.vue'
+import WeatherForecastContentFooterVue from '~/components/pages/weatherForecast/WeatherForecastContentFooter.vue'
 import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
 import { Head } from '~/interfaces/common/Head'
 
@@ -33,7 +35,8 @@ export default Vue.extend({
 
     components: {
         Breadcrumbs,
-        Heading
+        Heading,
+        WeatherForecastContentFooterVue
     },
 
     data(): DataType {
@@ -106,6 +109,7 @@ export default Vue.extend({
         .content {
             width: 800px;
             margin: 0 auto;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
 
@@ -117,7 +121,6 @@ export default Vue.extend({
             }
 
             .yearmonth-list {
-
                 display: flex;
                 flex-direction: column;
                 justify-content: center;

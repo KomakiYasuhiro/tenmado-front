@@ -18,17 +18,14 @@
                 .accordion-content
                     .to_area_links(v-for="(largeArea) in meteorologicalObservatory.largeAreas")
                       nuxt-link.to_area_link(:to="$route.path + largeArea.largeAreaCode + '/'") {{ largeArea.largeAreaName }}
-    hr.line
-    Contact(:contactText="contactText")
-    Source(:sources="sources")
+    WeatherForecastContentFooterVue
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import Breadcrumbs from '~/components/pages/common/Breadcrumbs.vue'
 import Heading from '~/components/pages/common/Heading.vue'
-import Source from '~/components/pages/common/Source.vue'
-import Contact from '~/components/pages/common/Contact.vue'
+import WeatherForecastContentFooterVue from '~/components/pages/weatherForecast/WeatherForecastContentFooter.vue'
 import Description from '~/components/pages/common/Description.vue'
 import { BreadcrumbsLayerInterface } from '~/interfaces/common/BreadcrumbsLayerInterface'
 import { Head } from '~/interfaces/common/Head'
@@ -37,8 +34,6 @@ interface DataType {
   breadcrumbsLayers: Array<BreadcrumbsLayerInterface>
   headingText: string
   descriptionText: string
-  sources: Array<string>
-  contactText: string
 }
 
 export default Vue.extend({
@@ -47,8 +42,7 @@ export default Vue.extend({
     Breadcrumbs,
     Heading,
     Description,
-    Source,
-    Contact,
+    WeatherForecastContentFooterVue
   },
 
 
@@ -62,10 +56,6 @@ export default Vue.extend({
       ],
       headingText: "過去天気予報データベース",
       descriptionText: "過去に行われた天気予報を蓄積しているデータベースです。気象台・地方・月次を条件に検索可能です。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
-      sources: [
-        "出典: <a href='https://www.jma.go.jp/bosai/forecast/'>気象庁ホームページ</a>の過去ページを集計&加工して表示"
-      ],
-      contactText: "本サービスについてのお問い合わせや<br>過去の天気予報のデータ提供について等<br>お気軽にご連絡ください。<br>"
     }
   },
 
@@ -109,6 +99,7 @@ export default Vue.extend({
     .content {
       width: 800px;
       margin: 0 auto;
+      margin-bottom: 20px;
       display: flex;
       flex-direction: column;
 
