@@ -3,7 +3,7 @@
     Headline(:text="'提供サービス一覧'")
     .services
         li.service
-            nuxt-link(to="/weatherforecast") 過去の天気予報検索サービス
+            nuxt-link(to="/weatherforecast/") 過去の天気予報検索サービス
         li.service Comming Soon.
 </template>
 
@@ -15,13 +15,6 @@ export default Vue.extend({
 
     components: {
         Headline
-    },
-
-    props: {
-        contactText: {
-            type: String,
-            required: true,
-        },
     },
 })
 </script>

@@ -20,7 +20,7 @@ export default Vue.extend({
 }
 .description-text {
     text-align: center;
-    background-color: #c8f3ff;
+    // background-color: #c8f3ff;
     color: #003972;
     margin: 30px 50px 20px 50px;
     padding: 25px 35px;

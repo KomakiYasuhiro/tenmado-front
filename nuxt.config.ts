@@ -88,6 +88,13 @@ const config: NuxtConfig = {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  router: {
+    // URL末尾スラッシュない場合は無効
+    trailingSlash: true,
+    // その際に末尾にスラッシュつけたverへリダイレクトする
+    middleware: "redirect"
   }
 }
 export default config
