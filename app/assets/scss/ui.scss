@@ -96,6 +96,15 @@
     &.button-primary:focus {
         @include contained-button-hover-focus($backgroundColor: #427ab6)
     }
+
+    &.button-primary-reverse {
+        @include contained-button($color: #4e8fd3, $backgroundColor: #fff);
+    }
+
+    &.button-primary-reverse:hover,
+    &.button-primary-reverse:focus {
+        @include contained-button-hover-focus($backgroundColor: #fff)
+    }
     
     &.button-accent {
         @include contained-button($color: #fff, $backgroundColor: #d3504e);
@@ -112,6 +121,10 @@
     &.button-contact-icon:before {
         @include button-icon($imagepath: "~/assets/image/contact-icon.svg")
     }
+
+    &.button-contact-icon-reverse:before {
+        @include button-icon($imagepath: "~/assets/image/contact-icon-reverse.svg")
+    }
 }
 
 // 水平線
@@ -126,4 +139,82 @@ hr.line {
     margin-right: auto;
     margin-left: auto;
     padding: 0;
+}
+
+// アコーディオンメニュー
+// 使い方(Pug表記)
+// ---------------------------------------------------------------------
+// input.accordion-check(id="accordion-check_1" type="checkbox")
+// label.accordion-label(for="accordion-check_1") 表示ラベル
+// .accordion-content
+//   内容1
+// input.accordion-check(id="accordion-check_2" type="checkbox")
+// label.accordion-label(for="accordion-check_2") 表示ラベル
+// .accordion-content
+//   内容2
+// ---------------------------------------------------------------------
+
+
+// チェックボックスのonoffで表現しているので、チェックボックスの描画を外す
+.accordion-check {
+    display: none;
+}
+
+// 閉表示のデザイン
+.accordion-label {
+    background: #eee;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+    padding: 10px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+// 閉表示の尾のデザイン
+.accordion-label:after {
+    position: absolute;
+    top: 50%;
+    right: 2%;
+    width: 0;
+    height: 0;
+    padding: 0;
+    content: "";
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #666666;
+    transform: translateY(-50%);
+}
+
+// 閉じているときの中身のデザイン
+.accordion-content {
+    border-right: 1px solid #eee;
+    border-left: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    height: 0;
+    opacity: 0;
+    padding: 0 10px;
+    margin-bottom: 3px;
+    visibility: hidden;
+}
+
+// 開かれたときのラベルデザイン
+.accordion-check:checked + .accordion-label {
+    margin-bottom: 0px;
+    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.2);
+}
+
+// 開かれた時の尾のデザイン(回転)
+.accordion-check:checked + .accordion-label:after{
+    transform: translateY(-50%) rotate(180deg);
+}
+
+// 開かれた時の中身のデザイン
+.accordion-check:checked + .accordion-label + .accordion-content {
+    height: 100%;
+    opacity: 1;
+    padding: 10px 10px 10px 30px;
+    margin-bottom: 8px;
+    visibility: visible;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
