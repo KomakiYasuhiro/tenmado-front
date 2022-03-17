@@ -18,6 +18,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .sources {
     margin-top: auto;
+    margin-right: 16px;
     color: #333333;
     font-size: 12px;
     display: flex;

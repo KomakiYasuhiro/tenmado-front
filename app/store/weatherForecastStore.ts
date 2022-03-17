@@ -1,7 +1,7 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import { RootState } from '~/store'
 import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
-import { MeteorologicalObservatoryInterface } from '~/interfaces/weatherForecast/MeteorologicalObservatoryInterface'
+import { KubunInterface, FlattenKubunInterface, KubunResponseInterface } from '~/interfaces/weatherForecast/KubunInterface'
 import { WeatherForecastQueryParamsInterface } from '~/interfaces/weatherForecast/WeatherForecastQueryParamsInterface'
 import { StartDateQueryParamsInterface } from '~/interfaces/weatherForecast/StartDateQueryParamsInterface'
 import { StartDateInterface } from '~/interfaces/weatherForecast/StartDateInterface'
@@ -10,59 +10,54 @@ import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 
 interface WeatherForecastStateInterface {
     weatherForecast: WeatherForecastInterface | null
-    meteorologicalObservatories: Array<MeteorologicalObservatoryInterface> | null
+    kubuns: Array<KubunInterface> | null
+    flattenKubuns: Array<FlattenKubunInterface> | null
     startDate: Date | null
     today: Date
-    condition: WeatherForecastConditionInterface | null
 }
 
 export const state = (): WeatherForecastStateInterface => ({
     weatherForecast: null,
-    meteorologicalObservatories: null,
+    kubuns: null,
+    flattenKubuns: null,
     startDate: null,
     today: new Date(),
-    condition: null,
 })
 
 export type WeatherForecastState = ReturnType<typeof state>
 
 export const getters: GetterTree<WeatherForecastState, RootState> = {
     weatherForecast: state => state.weatherForecast,
-    meteorologicalObservatories: state => state.meteorologicalObservatories,
+    kubuns: state => state.kubuns,
+    flattenKubuns: state => state.flattenKubuns,
     startDate: state => state.startDate,
     today: state => state.today,
-    condition: state => state.condition,
-    selectSourceYears: state => {
+    displayYearMonthList: state => {
         if (state.startDate == null) {
             return []
         }
-        return new Array(state.today.getFullYear() - state.startDate.getFullYear() + 1).fill(null).map(
-            (_, i) => state.startDate ? i + state.startDate.getFullYear() : null
-        )
-    },
-    selectSourceMonths: state => (selectedIntervalSourceYear) => {
-        if (state.startDate == null) {
-            return []
-        }
+
         const todayYear = state.today.getFullYear()
         // getMonthだけなぜか0~11の範囲をとる
         const todayMonth = state.today.getMonth() + 1
 
-        let startDateYear = state.startDate.getFullYear()
-        let startDateMonth = state.startDate.getMonth() + 1
+        const startDateYear = state.startDate.getFullYear()
+        const startDateMonth = state.startDate.getMonth() + 1
+        // 何年分か
+        const betweenYears: number = todayYear - startDateYear + 1
+        // startDateの年の月の数
+        const betweenFirstYearsMonth: number = 12 - startDateMonth + 1
+        // 表示する月の数
+        const betweenMonth: number = (todayYear != startDateYear) ? betweenFirstYearsMonth + (betweenYears - 2) * 12 + todayMonth : betweenFirstYearsMonth
 
-        let rangeStartMonth: number = 1
-        let rangeEndMonth: number = 12
-        if (selectedIntervalSourceYear == startDateYear) {
-            // 選択した年がstartDateと同じならば、startDateの月を最小値とする
-            rangeStartMonth = startDateMonth
-        }
-        if (selectedIntervalSourceYear == todayYear) {
-            // 選択した年が本日と同じならば、startDateの月を最小値とする
-            rangeEndMonth = todayMonth
-        }
+        return new Array(betweenMonth).fill(null).map((_, i) => new Date(startDateYear, startDateMonth - 1 + i, 1))
 
-        return new Array(rangeEndMonth - rangeStartMonth + 1).fill(null).map((_, i) => i + rangeStartMonth)
+    },
+    findFlattenKubunByLargeAreaCode: state => (largeAreaCode: string) => {
+        if (state.flattenKubuns == null) {
+            return
+        }
+        return state.flattenKubuns.find((flattenKubun) => flattenKubun.largeAreaCode == largeAreaCode)
     }
 }
 
@@ -70,14 +65,14 @@ export const mutations: MutationTree<WeatherForecastState> = {
     setWeatherForecast: (state: WeatherForecastState, weatherForecast: WeatherForecastInterface) => {
         state.weatherForecast = weatherForecast
     },
-    setMeteorologicalObservatories: (state: WeatherForecastState, meteorologicalObservatories: Array<MeteorologicalObservatoryInterface>) => {
-        state.meteorologicalObservatories = meteorologicalObservatories
+    setKubuns: (state: WeatherForecastState, kubuns: Array<KubunInterface>) => {
+        state.kubuns = kubuns
+    },
+    setFlattenKubuns: (state: WeatherForecastState, flattenKubuns: Array<FlattenKubunInterface>) => {
+        state.flattenKubuns = flattenKubuns
     },
     setStartDate: (state: WeatherForecastState, startDate: Date) => {
         state.startDate = startDate
-    },
-    setCondition: (state: WeatherForecastState, condition: WeatherForecastConditionInterface) => {
-        state.condition = condition
     },
 
 }
@@ -85,15 +80,15 @@ export const mutations: MutationTree<WeatherForecastState> = {
 export const actions: ActionTree<WeatherForecastState, RootState> = {
 
     /**
-    * 気象庁及び地域一覧を取得
+    * 予報区分, 気象台, 地域一覧を取得
     */
-    async fetchMeteorologicalObservatories({ commit }) {
+    async fetchKubuns({ commit }) {
         try {
-            const response = await this.$axios.$get('/api/weatherforecast/meteorologicalobservatory')
-            const meteorologicalObservatories: Array<MeteorologicalObservatoryInterface> = response.meteorological_observatories
-            commit('setMeteorologicalObservatories', meteorologicalObservatories)
+            const kubunresponse: KubunResponseInterface = await this.$axios.$get('/api/weatherforecast/kubun')
+            commit('setKubuns', kubunresponse.kubuns)
+            commit('setFlattenKubuns', kubunresponse.flattenkubuns)
         } catch (e) {
-            console.log(`気象庁及び地域一覧取得失敗 ${e}`);
+            console.log(`予報区分, 気象台, 地域一覧取得失敗 ${e}`);
         }
     },
 
@@ -111,26 +106,17 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
     },
 
     /**
-    * 検索条件をセット
-    * @param condition 条件
-    */
-    async setCondition({ commit }, condition: WeatherForecastConditionInterface) {
-        await commit('setCondition', condition)
-        await this.dispatch('weatherForecastStore/fetchWeatherForecast')
-    },
-
-    /**
     * 予報情報を取得
-    * @param weatherForecastQueryParams クエリパラメータ
+    * @param largeAreaCode 地域コード
+    * @param yearMonthStr 年月文字列
     */
-    async fetchWeatherForecast({ commit }) {
+    async fetchWeatherForecast({ commit }, weatherForecastCondition: WeatherForecastConditionInterface) {
 
-        const condition: WeatherForecastConditionInterface = this.getters['weatherForecastStore/condition']
-        const intervalSourceDate = new Date(Number(condition.intervalSourceYear), Number(condition.intervalSourceMonth) - 1, 1)
+        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, 1)
         const intervalTargetDate = convertToLastDayOfTheMonth(intervalSourceDate)
 
         const weatherForecastQueryParams: WeatherForecastQueryParamsInterface = {
-            largeAreaCode: condition.largeAreaCode,
+            largeAreaCode: weatherForecastCondition.largeAreaCode,
             reportDateFrom: convertDateToString(intervalSourceDate),
             reportDateTo: convertDateToString(intervalTargetDate),
             forecastdays: "7",
