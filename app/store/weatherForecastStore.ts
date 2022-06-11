@@ -48,9 +48,42 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
         // startDateの年の月の数
         const betweenFirstYearsMonth: number = 12 - startDateMonth + 1
         // 表示する月の数
-        const betweenMonth: number = (todayYear != startDateYear) ? betweenFirstYearsMonth + (betweenYears - 2) * 12 + todayMonth : betweenFirstYearsMonth
+        const betweenMonth: number = (todayYear != startDateYear) ? betweenFirstYearsMonth + (betweenYears - 2) * 12 + todayMonth : todayMonth - startDateMonth + 1
 
         return new Array(betweenMonth).fill(null).map((_, i) => new Date(startDateYear, startDateMonth - 1 + i, 1))
+
+    },
+    displayDayList: state => (selectedYear: number, selectedMonth: number) => {
+        if (state.startDate == null) {
+            return []
+        }
+
+        const todayYear = state.today.getFullYear()
+        // getMonthだけなぜか0~11の範囲をとる
+        const todayMonth = state.today.getMonth() + 1
+        const todayDate = state.today.getDate()
+
+        const startDateYear = state.startDate.getFullYear()
+        const startDateMonth = state.startDate.getMonth() + 1
+        const startDateDate = state.startDate.getDate()
+
+        let startday: number
+        let endday: number
+
+        if (startDateYear == selectedYear && startDateMonth == selectedMonth) {
+            startday = startDateDate
+        } else {
+            startday = 1
+        }
+
+        if (selectedYear == todayYear && selectedMonth == todayMonth) {
+            // 翌日に反映されるので表示するのは前日までとする
+            endday = todayDate - 1
+        } else {
+            endday = convertToLastDayOfTheMonth(new Date(selectedYear, selectedMonth - 1, 1)).getDate()
+        }
+        return new Array(endday - startday + 1).fill(null).map((_, i) => i + startday)
+
 
     },
     findFlattenKubunByLargeAreaCode: state => (largeAreaCode: string) => {
@@ -112,8 +145,8 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
     */
     async fetchWeatherForecast({ commit }, weatherForecastCondition: WeatherForecastConditionInterface) {
 
-        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, 1)
-        const intervalTargetDate = convertToLastDayOfTheMonth(intervalSourceDate)
+        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
+        const intervalTargetDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
 
         const weatherForecastQueryParams: WeatherForecastQueryParamsInterface = {
             largeAreaCode: weatherForecastCondition.largeAreaCode,
@@ -126,6 +159,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             const weatherForecast: WeatherForecastInterface = await this.$axios.$get('/api/weatherforecast/', { params: weatherForecastQueryParams })
             commit('setWeatherForecast', weatherForecast)
         } catch (e) {
+            commit('setWeatherForecast', null)
             console.log(`予報取得失敗 ${e}`);
         }
     },
