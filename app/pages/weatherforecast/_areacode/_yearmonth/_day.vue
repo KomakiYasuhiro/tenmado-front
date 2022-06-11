@@ -27,6 +27,7 @@ interface DataType {
     headingText: string,
     meteorologicalObservatoryNameLargeAreaName: string
     yearmonthstr: string
+    daystr: string
 }
 
 export default Vue.extend({
@@ -43,6 +44,7 @@ export default Vue.extend({
         const largeAreaName: string = this.$store.getters['weatherForecastStore/findFlattenKubunByLargeAreaCode'](this.$route.params.areacode).largeAreaName
         const meteorologicalObservatoryNameLargeAreaName: string = meteorologicalObservatoryName +  ' - ' + largeAreaName
         const yearmonthstr: string = this.$route.params.yearmonth.substring(0, 4) + '年' + this.$route.params.yearmonth.substring(4, 6) + '月'
+        const daystr: string = this.$route.params.day + '日'
         return {
             breadcrumbsLayers: [
                 {
@@ -54,15 +56,21 @@ export default Vue.extend({
                     name: meteorologicalObservatoryNameLargeAreaName
                 },
                 {
-                    path: "",
+                    path: "/weatherforecast/" + this.$route.params.areacode + '/' + this.$route.params.yearmonth + '/',
                     name: yearmonthstr
+                },
+                {
+                    path: "",
+                    name: daystr
                 },
             ],
             headingText: meteorologicalObservatoryNameLargeAreaName
                 + ' ' + yearmonthstr
+                + daystr
                 + ' ' +  "の過去天気予報",
             meteorologicalObservatoryNameLargeAreaName: meteorologicalObservatoryNameLargeAreaName,
             yearmonthstr: yearmonthstr,
+            daystr: daystr,
         }
     },
 
@@ -70,13 +78,13 @@ export default Vue.extend({
         return {
             title: this.headingText,
             meta: [
-                { hid: 'description', name: 'description', content: '過去に行われた' + this.meteorologicalObservatoryNameLargeAreaName + ' - ' + this.yearmonthstr + 'の天気予報です。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
+                { hid: 'description', name: 'description', content: this.yearmonthstr + this.daystr + 'に行われた' + this.meteorologicalObservatoryNameLargeAreaName + 'の天気予報です。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
                 { hid: 'keywords', name: 'keywords', content: '過去天気予報,天気予報,過去データ,ビッグデータ,データ分析,データサイエンス,統計,機械学習' },
 
                 { hid: 'og:site_name', property: 'og:site_name', content: 'テンマド' },
                 { hid: 'og:type', property: 'og:type', content: 'website' },
                 { hid: 'og:url', property: 'og:url', content: 'https:/tenmado.app' + (this.$route.path.substr(-1) == '/' ? this.$route.path : this.$route.path + '/') },
-                { hid: 'og:title', property: 'og:title', content: this.meteorologicalObservatoryNameLargeAreaName + ' - ' + this.yearmonthstr + 'の過去天気予報データベース - テンマド' },
+                { hid: 'og:title', property: 'og:title', content: this.meteorologicalObservatoryNameLargeAreaName + ' - ' + this.yearmonthstr + this.daystr + 'の過去天気予報データベース - テンマド' },
                 { hid: 'og:description', property: 'og:description', content: '過去に行われた' + this.meteorologicalObservatoryNameLargeAreaName + 'の天気予報です。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。' },
             ],
             link: [
@@ -89,7 +97,8 @@ export default Vue.extend({
         
         const weatherForecastCondition: WeatherForecastConditionInterface = {
             largeAreaCode: params.areacode,
-            yearMonthStr: params.yearmonth
+            yearMonthStr: params.yearmonth,
+            daystr: params.day,
         }
         await store.dispatch('weatherForecastStore/fetchWeatherForecast', weatherForecastCondition)
         

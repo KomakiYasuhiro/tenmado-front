@@ -9,9 +9,9 @@
             .day-list
                 nuxt-link.link(
                     v-for="day of $store.getters['weatherForecastStore/displayDayList'](Number($route.params.yearmonth.substring(0, 4)), Number($route.params.yearmonth.substring(4, 6)))" :key="day"
-                    :to="$route.path + day + '/'"
+                    :to="$route.path + ('00' + String(day)).slice( -2 ) + '/'"
                 )
-                    | {{ day }} 日
+                    | {{ ('00' + String(day)).slice( -2 ) }} 日
         WeatherForecastContentFooterVue
 </template>
 

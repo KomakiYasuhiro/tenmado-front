@@ -144,8 +144,8 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
     */
     async fetchWeatherForecast({ commit }, weatherForecastCondition: WeatherForecastConditionInterface) {
 
-        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, 1)
-        const intervalTargetDate = convertToLastDayOfTheMonth(intervalSourceDate)
+        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
+        const intervalTargetDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
 
         const weatherForecastQueryParams: WeatherForecastQueryParamsInterface = {
             largeAreaCode: weatherForecastCondition.largeAreaCode,
