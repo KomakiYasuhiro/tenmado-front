@@ -48,7 +48,7 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
         // startDateの年の月の数
         const betweenFirstYearsMonth: number = 12 - startDateMonth + 1
         // 表示する月の数
-        const betweenMonth: number = (todayYear != startDateYear) ? betweenFirstYearsMonth + (betweenYears - 2) * 12 + todayMonth : betweenFirstYearsMonth
+        const betweenMonth: number = (todayYear != startDateYear) ? betweenFirstYearsMonth + (betweenYears - 2) * 12 + todayMonth : todayMonth - startDateMonth + 1
 
         return new Array(betweenMonth).fill(null).map((_, i) => new Date(startDateYear, startDateMonth - 1 + i, 1))
 
