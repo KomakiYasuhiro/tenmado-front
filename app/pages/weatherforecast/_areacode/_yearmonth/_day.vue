@@ -5,10 +5,12 @@
         :headingText="headingText")
     article
         .content
-            template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
-                .cards
+            .cards
+                template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
                     template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
                         WeatherForecastCard(:report="report")
+                template(v-else)
+                    .sorry 取得失敗した可能性が高い日です。詳細につきましてはお問い合わせください。
         WeatherForecastContentFooterVue
 </template>
 
@@ -120,6 +122,10 @@ export default Vue.extend({
         align-items: center;
         margin-top: 20px;
         margin-bottom: 20px;
+
+        .sorry {
+            color: #555555;
+        }
     }
 }
 </style>

@@ -77,7 +77,8 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
         }
 
         if (selectedYear == todayYear && selectedMonth == todayMonth) {
-            endday = todayDate
+            // 翌日に反映されるので表示するのは前日までとする
+            endday = todayDate - 1
         } else {
             endday = convertToLastDayOfTheMonth(new Date(selectedYear, selectedMonth - 1, 1)).getDate()
         }
@@ -158,6 +159,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             const weatherForecast: WeatherForecastInterface = await this.$axios.$get('/api/weatherforecast/', { params: weatherForecastQueryParams })
             commit('setWeatherForecast', weatherForecast)
         } catch (e) {
+            commit('setWeatherForecast', null)
             console.log(`予報取得失敗 ${e}`);
         }
     },
