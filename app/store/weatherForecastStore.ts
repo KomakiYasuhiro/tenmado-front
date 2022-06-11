@@ -53,6 +53,38 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
         return new Array(betweenMonth).fill(null).map((_, i) => new Date(startDateYear, startDateMonth - 1 + i, 1))
 
     },
+    displayDayList: state => (selectedYear: number, selectedMonth: number) => {
+        if (state.startDate == null) {
+            return []
+        }
+
+        const todayYear = state.today.getFullYear()
+        // getMonthだけなぜか0~11の範囲をとる
+        const todayMonth = state.today.getMonth() + 1
+        const todayDate = state.today.getDate()
+
+        const startDateYear = state.startDate.getFullYear()
+        const startDateMonth = state.startDate.getMonth() + 1
+        const startDateDate = state.startDate.getDate()
+
+        let startday: number
+        let endday: number
+
+        if (startDateYear == selectedYear && startDateMonth == selectedMonth) {
+            startday = startDateDate
+        } else {
+            startday = 1
+        }
+
+        if (selectedYear == todayYear && selectedMonth == todayMonth) {
+            endday = todayDate
+        } else {
+            endday = convertToLastDayOfTheMonth(new Date(selectedYear, selectedMonth - 1, 1)).getDate()
+        }
+        return new Array(endday - startday + 1).fill(null).map((_, i) => i + startday)
+
+
+    },
     findFlattenKubunByLargeAreaCode: state => (largeAreaCode: string) => {
         if (state.flattenKubuns == null) {
             return
