@@ -43,26 +43,28 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 14.28%;
+    width: 140px;
     color: #333333;
 
     .forecast-target-date {
-        font-size: 10px;
+        font-size: 16px;
     }
 
     .weather-fig {
-        margin-top: 6px;
-        margin-bottom: 6px;
+        margin: 6px 0;
+        padding: 0 6px;
+        width: 80%
     }
 
     .weather {
-        font-size: 11px;
-        margin-bottom: 6px;
+        font-size: 16px;
+        margin-top: 8px;
+        margin-bottom: 16px;
     }
 
     .pop {
-        margin-top: 6px;
-        margin-bottom: 6px;
+        margin-top: 8px;
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
 
@@ -71,16 +73,18 @@ export default Vue.extend({
         }
         .pop-percent {
             margin-left: 5px;
-            font-size: 10px;
+            font-size: 12px;
         }
     }
 
     .temperature-area {
         display: flex;
+        flex-direction: column;
         align-items: center;
+        height: 56px;
 
         .temperature {
-            font-size: 16px;
+            font-size: 20px;
             margin-right: 5px;
         }
 

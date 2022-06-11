@@ -36,7 +36,7 @@ export default Vue.extend({
     margin-top: 8px;
     margin-bottom: 8px;
     padding: 15px 20px;
-    width: 1200px;
+    // width: 1200px;
 
     .report-date {
         width: 10%;
