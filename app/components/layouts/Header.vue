@@ -34,18 +34,37 @@ export default Vue.extend({
     margin-block-end: 0em;
     display: flex;
     justify-content: space-between;
+}
+.header-logo {
+    margin-left: 40px;
+    height: 80px;
+    width: 242.8px;
+}
+
+.contact-button {
+    width: 200px;
+    margin-top: 16px;
+    margin-right: 40px;
+}
+
+
+@media screen and (max-width: 500px) {
+
+    .header {
+        height: 60px;
+        padding-top: 8px;
+    }
 
     .header-logo {
-        margin-left: 40px;
-        height: 80px;
-        width: 242.8px;
+        margin-left: 12px;
+        width: auto;
+        height: 100%;
     }
 
     .contact-button {
-        width: 200px;
-        margin-top: 16px;
-        margin-right: 40px;
+        display: none;
     }
 }
+
 
 </style>

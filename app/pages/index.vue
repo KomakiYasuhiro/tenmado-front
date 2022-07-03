@@ -28,7 +28,7 @@ export default Vue.extend({
 
     data() {
         return {
-            contactText: "本サービスについてのお問い合わせや<br各種データ提供について等<br>お気軽にご連絡ください。<br>"
+            contactText: "本サービスについてのお問い合わせや<br>各種データ提供について等<br>お気軽にご連絡ください。<br>"
         }
     },
 
@@ -62,22 +62,28 @@ export default Vue.extend({
     align-items: center;
     margin: 0 auto;
     margin-bottom: 50px;
-
-    .bg-gray {
-        background-color: #eeeeee;
-    }
-
-    .description {
-        width: 100%;
-    }
-
-    .services {
-        margin: 30px 0px 50px 0px;
-    }
-
-    .contact {
-        width: 100%;
-    }
-
 }
+.bg-gray {
+    background-color: #eeeeee;
+}
+
+.description {
+    width: 100%;
+}
+
+.services {
+    margin: 30px 0px 50px 0px;
+}
+
+.contact {
+    width: 100%;
+}
+
+@media screen and (max-width: 500px) {
+    .content {
+        width: 100%;
+    }
+}
+
+
 </style>

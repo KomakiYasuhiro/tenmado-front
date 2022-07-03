@@ -55,7 +55,7 @@ export default Vue.extend({
                 }
             ],
             meteorologicalObservatoryNameLargeAreaName: meteorologicalObservatoryNameLargeAreaName,
-            headingText: meteorologicalObservatoryNameLargeAreaName + ' ' +  "の過去天気予報",
+            headingText: meteorologicalObservatoryNameLargeAreaName + ' ' +  "<br>" + "の過去天気予報",
         }
     },
 
@@ -96,46 +96,59 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     min-height: 85vh;
+}
 
-    .heading {
-        margin-bottom: 50px;
-    }
+.heading {
+    margin-bottom: 50px;
+}
 
-    article {
+article {
     display: flex;
     flex-direction: column;
+}
 
-        .content {
-            width: 800px;
-            margin: 0 auto;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
+.content {
+    width: 800px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
 
-            .content-title {
-                color: #555;
-                font-size: 18px;
-                font-weight: normal;
-                margin-bottom: 5px;
-            }
+.content-title {
+    color: #555;
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 5px;
+}
 
-            .yearmonth-list {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border: 1px solid #eee;
-                padding: 30px;
+.yearmonth-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #eee;
+    padding: 30px;
+}
 
-                .link {
-                    color: #4e8fd3;
-                    margin: 4px;
-                }
+.link {
+    color: #4e8fd3;
+    margin: 4px;
+}
 
-            }
 
-            
-        }
+@media screen and (max-width: 500px) {
+    .heading {
+        margin-bottom: 50px;
+        padding: 0 30px;
+    }
+
+    .content {
+        width: 88%;
+    }
+
+    .yearmonth-list {
+        border: 0px solid #eee;
     }
 }
 </style>

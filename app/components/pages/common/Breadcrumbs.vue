@@ -56,4 +56,11 @@ export default Vue.extend({
         color: #4e8fd3
     }
 }
+
+@media screen and (max-width: 500px) {
+    .heading-breadcrumbs {
+        margin: 15px 15px;
+        font-size: 10px;
+    }
+}
 </style>
