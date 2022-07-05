@@ -3,7 +3,7 @@
   Breadcrumbs(:layers="breadcrumbsLayers")
   article
     Heading(:headingText="headingText")
-    Description(:descriptionText="descriptionText")
+    Description.description(:descriptionText="descriptionText")
     .content
       h2.content-title 気象台・地方を選択
       .kubun-list
@@ -93,31 +93,42 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   min-height: 85vh;
+}
 
-  article {
-    display: flex;
-    flex-direction: column;
+article {
+  display: flex;
+  flex-direction: column;
+}
 
-    .content {
-      width: 800px;
-      margin: 0 auto;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
+.content {
+  width: 800px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
 
-      .content-title {
-        color: #555;
-        font-size: 18px;
-        font-weight: normal;
-        margin-bottom: 5px;
-      }
+.content-title {
+  color: #555;
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 5px;
+}
 
-      .to_area_link {
-        color: #4e8fd3
-      }
-    }
+.to_area_link {
+  color: #4e8fd3
+}
+
+
+@media screen and (max-width: 500px) {
+  .description {
+    height: 0px;
+    display: none;
   }
 
+  .content {
+    width: 88%;
+  }
 }
 
 

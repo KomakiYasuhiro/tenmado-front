@@ -26,22 +26,37 @@ export default Vue.extend({
     justify-content: space-between;
 
     color: #333333;
+}
+.description-text {
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    .description-text {
-        margin: 0px auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+.description-text-part {
+    padding: 10px 0px;
+}
 
-        .description-text-part {
-            padding: 10px 0px;
-        }
+.description-image {
+    width: 500px;
+    height: 375px;
+    padding: 20px;
+}
+
+
+@media screen and (max-width: 500px) {
+    .description-image{
+        display: none;
     }
 
-    .description-image {
-        width: 500px;
-        height: 375px;
-        padding: 20px;
+    .description-text-part {
+        padding: 4px 0px;
+        font-size: 12px;
+    }
+
+    .description-text {
+        padding: 32px;
     }
 }
 </style>

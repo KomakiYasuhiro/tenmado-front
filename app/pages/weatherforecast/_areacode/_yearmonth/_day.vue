@@ -7,8 +7,8 @@
         .content
             .cards
                 template(v-if="$store.getters['weatherForecastStore/weatherForecast'] != null")
-                    template(v-for="(report) in $store.getters['weatherForecastStore/weatherForecast'].reports")
-                        WeatherForecastCard(:report="report")
+                    template(v-for="(forecast) in $store.getters['weatherForecastStore/weatherForecast'].reports[0].forecasts")
+                        WeatherForecastCard(:forecast="forecast")
                 template(v-else)
                     .sorry 取得失敗した可能性が高い日です。詳細につきましてはお問い合わせください。
         WeatherForecastContentFooterVue
@@ -67,7 +67,7 @@ export default Vue.extend({
                 },
             ],
             headingText: meteorologicalObservatoryNameLargeAreaName
-                + ' ' + yearmonthstr
+                + ' ' +  "<br>" + yearmonthstr
                 + daystr
                 + ' ' +  "の過去天気予報",
             meteorologicalObservatoryNameLargeAreaName: meteorologicalObservatoryNameLargeAreaName,
@@ -114,18 +114,30 @@ export default Vue.extend({
 <style lang="scss" scoped>
 
 .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin: 40px 0px;
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 400px;
+}
+
+.sorry {
+    color: #555555;
+}
+
+
+@media screen and (max-width: 500px) {
 
     .cards {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 20px;
-        margin-bottom: 20px;
-
-        .sorry {
-            color: #555555;
-        }
+        width: 88%;
     }
 }
 </style>
