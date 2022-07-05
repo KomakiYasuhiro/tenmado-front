@@ -35,14 +35,27 @@ export default Vue.extend({
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+.title {
+    margin: 15px 0px;
+    font-size: 45px;
+}
+
+.subtitle {
+    font-size: 30px;
+}
+
+@media screen and (max-width: 500px) {
+    .catchcopy {
+        height: 360px;
+    }
 
     .title {
-        margin: 15px 0px;
-        font-size: 45px;
+        font-size: 28px;
     }
 
     .subtitle {
-        font-size: 30px;
+        font-size: 20px;
     }
 }
 </style>
