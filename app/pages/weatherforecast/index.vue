@@ -3,7 +3,7 @@
   Breadcrumbs(:layers="breadcrumbsLayers")
   article
     Heading(:headingText="headingText")
-    Description.description(:descriptionText="descriptionText")
+    Description(:descriptionText="descriptionText")
     .content
       h2.content-title 気象台・地方を選択
       .kubun-list
@@ -121,10 +121,6 @@ article {
 
 
 @media screen and (max-width: 500px) {
-  .description {
-    height: 0px;
-    display: none;
-  }
 
   .content {
     width: 88%;

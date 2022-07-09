@@ -25,4 +25,10 @@ export default Vue.extend({
     margin: 30px 50px 20px 50px;
     padding: 25px 35px;
 }
+
+@media screen and (max-width: 500px) {
+    .description {
+        display: none;
+    }
+}
 </style>
