@@ -4,6 +4,8 @@
     .services
         li.service
             nuxt-link(to="/weatherforecast/") 過去の天気予報検索サービス
+        li.service 
+            a(href="https://yomeru.jp/") Yomeru(ヨメル) 
         li.service Comming Soon.
 </template>
 
