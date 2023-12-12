@@ -75,7 +75,7 @@ const config: NuxtConfig = {
 
   proxy: {
     '/api/': {
-      target: 'https://tenmado-api-6jbikhj2nq-an.a.run.app',
+      target: process.env.ENV == "prd" ? 'https://tenmado-api-6jbikhj2nq-an.a.run.app' : 'https://tenmado-api-dev-6jbikhj2nq-an.a.run.app',
       pathRewrite: { '^/api/': '/' }
     },
   },
