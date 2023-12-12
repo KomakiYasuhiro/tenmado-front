@@ -1,26 +1,29 @@
-import { GetterTree, ActionTree, MutationTree } from 'vuex'
-import { RootState } from '~/store'
-import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
-import { KubunInterface, FlattenKubunInterface, KubunResponseInterface } from '~/interfaces/weatherForecast/KubunInterface'
-import { WeatherForecastQueryParamsInterface } from '~/interfaces/weatherForecast/WeatherForecastQueryParamsInterface'
-import { StartDateQueryParamsInterface } from '~/interfaces/weatherForecast/StartDateQueryParamsInterface'
+import { ActionTree, GetterTree, MutationTree } from 'vuex'
+import { KubunInterface } from '~/interfaces/weatherForecast/KubunInterface'
+import { LargeAreaConditionInterface } from '~/interfaces/weatherForecast/LargeAreaConditionInterface'
+import { LargeAreaInterface } from '~/interfaces/weatherForecast/LargeAreaInterface'
+import { LargeAreaQueryParamsInterface } from '~/interfaces/weatherForecast/LargeAreaQueryParamsInterface'
 import { StartDateInterface } from '~/interfaces/weatherForecast/StartDateInterface'
+import { StartDateQueryParamsInterface } from '~/interfaces/weatherForecast/StartDateQueryParamsInterface'
 import { WeatherForecastConditionInterface } from '~/interfaces/weatherForecast/WeatherForecastConditionInterface'
+import { WeatherForecastInterface } from '~/interfaces/weatherForecast/WeatherForecastInterface'
+import { WeatherForecastQueryParamsInterface } from '~/interfaces/weatherForecast/WeatherForecastQueryParamsInterface'
+import { RootState } from '~/store'
 import { convertDateToString, convertToLastDayOfTheMonth } from '~/utils/date'
 
 interface WeatherForecastStateInterface {
     weatherForecast: WeatherForecastInterface | null
     kubuns: Array<KubunInterface> | null
-    flattenKubuns: Array<FlattenKubunInterface> | null
     startDate: Date | null
+    largeAreas: Array<LargeAreaInterface> | null
     today: Date
 }
 
 export const state = (): WeatherForecastStateInterface => ({
     weatherForecast: null,
     kubuns: null,
-    flattenKubuns: null,
     startDate: null,
+    largeAreas: null,
     today: new Date(),
 })
 
@@ -29,8 +32,8 @@ export type WeatherForecastState = ReturnType<typeof state>
 export const getters: GetterTree<WeatherForecastState, RootState> = {
     weatherForecast: state => state.weatherForecast,
     kubuns: state => state.kubuns,
-    flattenKubuns: state => state.flattenKubuns,
     startDate: state => state.startDate,
+    largeAreas: state => state.largeAreas,
     today: state => state.today,
     displayYearMonthList: state => {
         if (state.startDate == null) {
@@ -83,15 +86,7 @@ export const getters: GetterTree<WeatherForecastState, RootState> = {
             endday = convertToLastDayOfTheMonth(new Date(selectedYear, selectedMonth - 1, 1)).getDate()
         }
         return new Array(endday - startday + 1).fill(null).map((_, i) => i + startday)
-
-
     },
-    findFlattenKubunByLargeAreaCode: state => (largeAreaCode: string) => {
-        if (state.flattenKubuns == null) {
-            return
-        }
-        return state.flattenKubuns.find((flattenKubun) => flattenKubun.largeAreaCode == largeAreaCode)
-    }
 }
 
 export const mutations: MutationTree<WeatherForecastState> = {
@@ -101,11 +96,11 @@ export const mutations: MutationTree<WeatherForecastState> = {
     setKubuns: (state: WeatherForecastState, kubuns: Array<KubunInterface>) => {
         state.kubuns = kubuns
     },
-    setFlattenKubuns: (state: WeatherForecastState, flattenKubuns: Array<FlattenKubunInterface>) => {
-        state.flattenKubuns = flattenKubuns
-    },
     setStartDate: (state: WeatherForecastState, startDate: Date) => {
         state.startDate = startDate
+    },
+    setLargeAreas: (state: WeatherForecastState, largeAreas: Array<LargeAreaInterface>) => {
+        state.largeAreas = largeAreas
     },
 
 }
@@ -113,20 +108,19 @@ export const mutations: MutationTree<WeatherForecastState> = {
 export const actions: ActionTree<WeatherForecastState, RootState> = {
 
     /**
-    * 予報区分, 気象台, 地域一覧を取得
+    * 予報区分, 気象台を取得
     */
     async fetchKubuns({ commit }) {
         try {
-            const kubunresponse: KubunResponseInterface = await this.$axios.$get('/api/weatherforecast/kubun')
-            commit('setKubuns', kubunresponse.kubuns)
-            commit('setFlattenKubuns', kubunresponse.flattenkubuns)
+            const kubuns: Array<KubunInterface> = await this.$axios.$get('/api/weatherforecast/kubun')
+            commit('setKubuns', kubuns)
         } catch (e) {
-            console.log(`予報区分, 気象台, 地域一覧取得失敗 ${e}`);
+            console.log(`予報区分, 気象台 取得失敗 ${e}`);
         }
     },
 
     /**
-    * 地域の集計開始日を取得
+    * 気象台の集計開始日を取得
     * @param startDateQueryParams クエリパラメータ
     */
     async fetchStartDate({ commit }, startDateQueryParams: StartDateQueryParamsInterface) {
@@ -139,20 +133,42 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
     },
 
     /**
+    * 地域を取得
+    * @param meteorologicalObservatoryName 気象地点名
+    * @param yearMonthStr 年月文字列
+    * @param daystr 日文字列
+    */
+    async fetchLargeArea({ commit }, largeAreaCondition: LargeAreaConditionInterface) {
+
+        const targetDate = new Date(Number(largeAreaCondition.yearMonthStr.substring(0, 4)), Number(largeAreaCondition.yearMonthStr.substring(4, 6)) - 1, Number(largeAreaCondition.daystr))
+
+        const largeAreaQueryParams: LargeAreaQueryParamsInterface = {
+            meteorologicalObservatoryName: largeAreaCondition.meteorologicalObservatoryName,
+            reportDate: convertDateToString(targetDate)
+        }
+
+        try {
+            const largeareas: Array<LargeAreaInterface> = await this.$axios.$get('/api/weatherforecast/largearea', { params: largeAreaQueryParams })
+            commit('setLargeAreas', largeareas)
+        } catch (e) {
+            console.log(`largeArea取得失敗 ${e}`);
+        }
+    },
+
+    /**
     * 予報情報を取得
     * @param largeAreaCode 地域コード
     * @param yearMonthStr 年月文字列
+    * @param daystr 日文字列
     */
     async fetchWeatherForecast({ commit }, weatherForecastCondition: WeatherForecastConditionInterface) {
 
-        const intervalSourceDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
-        const intervalTargetDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
+        const targetDate = new Date(Number(weatherForecastCondition.yearMonthStr.substring(0, 4)), Number(weatherForecastCondition.yearMonthStr.substring(4, 6)) - 1, Number(weatherForecastCondition.daystr))
 
         const weatherForecastQueryParams: WeatherForecastQueryParamsInterface = {
+            meteorologicalObservatoryName: weatherForecastCondition.meteorologicalObservatoryName,
             largeAreaCode: weatherForecastCondition.largeAreaCode,
-            reportDateFrom: convertDateToString(intervalSourceDate),
-            reportDateTo: convertDateToString(intervalTargetDate),
-            forecastdays: "7",
+            reportDate: convertDateToString(targetDate)
         };
 
         try {

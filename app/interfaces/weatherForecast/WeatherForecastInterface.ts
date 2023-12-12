@@ -13,22 +13,12 @@ export interface ForecastInterface {
     highestTemperatureUpper: number
 }
 
-export interface ReportInterface {
-    reportDate: Date,
-    forecastTargetDateFrom: Date
-    forecastTargetDateTo: Date
-    forecastdays: number
-    forecasts: Array<ForecastInterface>
-}
-
 export interface WeatherForecastInterface {
     meteorologicalObservatoryName: string
     largeAreaCode: string,
     largeAreaName: string,
     cityCode: string,
     cityName: string,
-    reportDateFrom: Date,
-    reportDateto: Date,
-    reportDays: number,
-    reports: Array<ReportInterface>
+    reportDate: Date,
+    forecasts: Array<ForecastInterface>
 }

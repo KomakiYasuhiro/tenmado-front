@@ -1,6 +1,5 @@
 export interface WeatherForecastQueryParamsInterface {
+    meteorologicalObservatoryName: string
     largeAreaCode: string,
-    reportDateFrom: string,
-    reportDateTo: string,
-    forecastdays: string,
+    reportDate: string,
 }
