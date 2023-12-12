@@ -1,3 +1,3 @@
 export interface StartDateQueryParamsInterface {
-    largeAreaCode: string
+    meteorologicalObservatoryName: string
 }

@@ -1,27 +1,17 @@
 <template lang="pug">
 .page
   Breadcrumbs(:layers="breadcrumbsLayers")
+  Heading.heading(:headingText="headingText")
   article
-    Heading(:headingText="headingText")
-    Description(:descriptionText="descriptionText")
     .content
-      h2.content-title 気象台を選択
-      .kubun-list
-        template(
-          v-for="(kubun, index_i) in $store.getters['weatherForecastStore/kubuns']"
+      h2.content-title 対象日を選択
+      .day-list
+        nuxt-link.link(
+          v-for="day of $store.getters['weatherForecastStore/displayDayList'](Number($route.params.yearmonth.substring(0, 4)), Number($route.params.yearmonth.substring(4, 6)))",
+          :key="day",
+          :to="$route.path + ('00' + String(day)).slice(-2) + '/'"
         )
-          input.accordion-check(
-            :id="'accordion-check' + index_i",
-            type="checkbox"
-          )
-          label.accordion-label(:for="'accordion-check' + index_i") {{ kubun.kubunName }}
-          .accordion-content
-            .to_yearmonth_links(
-              v-for="meteorologicalObservatory in kubun.meteorologicalObservatories"
-            )
-              nuxt-link.to_yearmonth_link(
-                :to="$route.path + meteorologicalObservatory.meteorologicalObservatoryName + '/'"
-              ) {{ meteorologicalObservatory.meteorologicalObservatoryName != "気象庁" ? meteorologicalObservatory.meteorologicalObservatoryName : "東京気象庁" }}
+          | {{ ("00" + String(day)).slice(-2) }} 日
     WeatherForecastContentFooterVue
 </template>
 
@@ -30,47 +20,71 @@ import Vue from "vue";
 import Breadcrumbs from "~/components/pages/common/Breadcrumbs.vue";
 import Heading from "~/components/pages/common/Heading.vue";
 import WeatherForecastContentFooterVue from "~/components/pages/weatherForecast/WeatherForecastContentFooter.vue";
-import Description from "~/components/pages/common/Description.vue";
 import { BreadcrumbsLayerInterface } from "~/interfaces/common/BreadcrumbsLayerInterface";
 import { Head } from "~/interfaces/common/Head";
 
 interface DataType {
   breadcrumbsLayers: Array<BreadcrumbsLayerInterface>;
+  meteorologicalObservatoryName: string;
   headingText: string;
-  descriptionText: string;
+  yearmonthstr: string;
 }
 
 export default Vue.extend({
   components: {
     Breadcrumbs,
     Heading,
-    Description,
     WeatherForecastContentFooterVue,
   },
 
   data(): DataType {
+    const meteorologicalObservatoryName: string =
+      this.$route.params.meteorologicalobservatoryname;
+    const yearmonthstr: string =
+      this.$route.params.yearmonth.substring(0, 4) +
+      "年" +
+      this.$route.params.yearmonth.substring(4, 6) +
+      "月";
     return {
       breadcrumbsLayers: [
         {
           path: "/weatherforecast/",
           name: "過去天気予報データベース",
         },
+        {
+          path: "/weatherforecast/" + meteorologicalObservatoryName + "/",
+          name: meteorologicalObservatoryName,
+        },
+        {
+          path: "",
+          name: yearmonthstr,
+        },
       ],
-      headingText: "過去天気予報データベース",
-      descriptionText:
-        "過去に行われた天気予報を蓄積しているデータベースです。気象台・地方・月次を条件に検索可能です。</br>過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+      meteorologicalObservatoryName: meteorologicalObservatoryName,
+      headingText:
+        meteorologicalObservatoryName +
+        " " +
+        "<br>" +
+        yearmonthstr +
+        " " +
+        "の過去天気予報",
+      yearmonthstr: yearmonthstr,
     };
   },
 
   head(): Head {
     return {
-      title: "過去天気予報データベース",
+      title: this.headingText,
       meta: [
         {
           hid: "description",
           name: "description",
           content:
-            "過去に行われた天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+            "過去に行われた" +
+            this.meteorologicalObservatoryName +
+            " - " +
+            this.yearmonthstr +
+            "の天気予報です。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
         },
         {
           hid: "keywords",
@@ -93,13 +107,19 @@ export default Vue.extend({
         {
           hid: "og:title",
           property: "og:title",
-          content: "過去天気予報データベース - テンマド",
+          content:
+            this.meteorologicalObservatoryName +
+            " - " +
+            this.yearmonthstr +
+            "の過去天気予報データベース - テンマド",
         },
         {
           hid: "og:description",
           property: "og:description",
           content:
-            "過去に行われた天気予報を気象台・地方・月次を条件に検索できるお手軽便利サービスです。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
+            "過去に行われた" +
+            this.meteorologicalObservatoryName +
+            "の天気予報です。過去のデータ分析やAI・機械学習のモデリングなどにもお使いいただけます。",
         },
       ],
       link: [
@@ -115,12 +135,6 @@ export default Vue.extend({
       ],
     };
   },
-
-  async fetch({ store }) {
-    if (store.getters["weatherForecastStore/kubuns"] == null) {
-      await store.dispatch("weatherForecastStore/fetchKubuns");
-    }
-  },
 });
 </script>
 
@@ -129,6 +143,10 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   min-height: 85vh;
+}
+
+.heading {
+  margin-bottom: 50px;
 }
 
 article {
@@ -151,14 +169,32 @@ article {
   margin-bottom: 5px;
 }
 
-.to_yearmonth_link {
+.day-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #eee;
+  padding: 30px;
+}
+
+.link {
   color: #4e8fd3;
   margin: 4px;
 }
 
 @media screen and (max-width: 500px) {
+  .heading {
+    margin-bottom: 50px;
+    padding: 0 30px;
+  }
+
   .content {
     width: 88%;
+  }
+
+  .day-list {
+    border: 0px solid #eee;
   }
 }
 </style>

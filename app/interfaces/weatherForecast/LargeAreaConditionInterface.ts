@@ -1,6 +1,5 @@
-export interface WeatherForecastConditionInterface {
+export interface LargeAreaConditionInterface {
     meteorologicalObservatoryName: string
-    largeAreaCode: string
     yearMonthStr: string
     daystr: string
 }
