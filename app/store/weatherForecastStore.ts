@@ -115,6 +115,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             const kubuns: Array<KubunInterface> = await this.$axios.$get('/api/weatherforecast/kubun')
             commit('setKubuns', kubuns)
         } catch (e) {
+            commit('setKubuns', null)
             console.log(`予報区分, 気象台 取得失敗 ${e}`);
         }
     },
@@ -128,6 +129,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             const startDate: StartDateInterface = await this.$axios.$get('/api/weatherforecast/startdate', { params: startDateQueryParams })
             commit('setStartDate', new Date(startDate.startDate))
         } catch (e) {
+            commit('setStartDate', null)
             console.log(`startDate取得失敗 ${e}`);
         }
     },
@@ -151,6 +153,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
             const largeareas: Array<LargeAreaInterface> = await this.$axios.$get('/api/weatherforecast/largearea', { params: largeAreaQueryParams })
             commit('setLargeAreas', largeareas)
         } catch (e) {
+            commit('setLargeAreas', null)
             console.log(`largeArea取得失敗 ${e}`);
         }
     },
