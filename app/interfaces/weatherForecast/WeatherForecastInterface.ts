@@ -17,7 +17,7 @@ export interface WeatherForecastInterface {
     meteorologicalObservatoryName: string
     largeAreaCode: string,
     largeAreaName: string,
-    cityCode: string,
+    // cityCode: string,
     cityName: string,
     reportDate: Date,
     forecasts: Array<ForecastInterface>
