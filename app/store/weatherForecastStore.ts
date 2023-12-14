@@ -175,7 +175,7 @@ export const actions: ActionTree<WeatherForecastState, RootState> = {
         };
 
         try {
-            const weatherForecast: WeatherForecastInterface = await this.$axios.$get('/api/weatherforecast', { params: weatherForecastQueryParams })
+            const weatherForecast: WeatherForecastInterface = await this.$axios.$get('/api/weatherforecast/', { params: weatherForecastQueryParams })
             commit('setWeatherForecast', weatherForecast)
         } catch (e) {
             commit('setWeatherForecast', null)
