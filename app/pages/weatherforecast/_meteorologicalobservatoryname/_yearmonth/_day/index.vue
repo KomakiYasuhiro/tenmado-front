@@ -8,7 +8,7 @@
       .area-list
         nuxt-link.link(
           v-for="(largeArea, index) in $store.getters['weatherForecastStore/largeAreas']",
-          :key="largeArea.largeAreaCode",
+          :key="index",
           :to="$route.path + largeArea.largeAreaCode + '/'"
         )
           | {{ largeArea.largeAreaName }}
